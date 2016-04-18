@@ -17,7 +17,6 @@ public class CreateRoomActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.create_room);
-
         final CheckBox num1 = (CheckBox)findViewById(R.id.num1);
         final CheckBox num2 = (CheckBox)findViewById(R.id.num2);
         final CheckBox num3 = (CheckBox)findViewById(R.id.num3);
