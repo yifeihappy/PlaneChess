@@ -53,8 +53,10 @@ public class BroascastGroupHelper extends BroadCastBaseHelper {
             mMulticastSocket.setTimeToLive(timeToLive);
         } catch (UnknownHostException e) {
             e.printStackTrace();
+            if(mErrorListner!=null) mErrorListner.handleError(e);
         } catch (IOException e) {
             e.printStackTrace();
+            if(mErrorListner!=null) mErrorListner.handleError(e);
         }
         mRecvData=new DatagramPacket(buf,buf.length);
     }
@@ -74,6 +76,7 @@ public class BroascastGroupHelper extends BroadCastBaseHelper {
             mMulticastSocket.joinGroup(mGroupInetAddress);
         } catch (IOException e) {
             e.printStackTrace();
+            if(mErrorListner!=null) mErrorListner.handleError(e);
             return  false;
         }
         if(mJoinGroupLisener!=null){
@@ -91,6 +94,7 @@ public class BroascastGroupHelper extends BroadCastBaseHelper {
             mMulticastSocket.leaveGroup(mGroupInetAddress);
         } catch (IOException e) {
             e.printStackTrace();
+            if(mErrorListner!=null) mErrorListner.handleError(e);
             return  false;
         }
         if(mLeaveGroupLisener!=null){
@@ -112,6 +116,7 @@ public class BroascastGroupHelper extends BroadCastBaseHelper {
             mMulticastSocket.send(data);
         } catch (IOException e) {
             e.printStackTrace();
+            if(mErrorListner!=null) mErrorListner.handleError(e);
             return false;
         }
         return true;
@@ -127,6 +132,7 @@ public class BroascastGroupHelper extends BroadCastBaseHelper {
             mMulticastSocket.receive(mRecvData);
         } catch (IOException e) {
             e.printStackTrace();
+            if(mErrorListner!=null) mErrorListner.handleError(e);
             return false;
         }
         BroadCastBaseMsg msg=new BroadCastBaseMsg();
@@ -162,6 +168,6 @@ public class BroascastGroupHelper extends BroadCastBaseHelper {
         void onJoin(InetAddress address);
     }
     public interface OnAddressLeaveGroupLisener{
-        void onLeave(InetAddress address);
+        void  onLeave(InetAddress address);
     }
 }
