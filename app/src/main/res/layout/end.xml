@@ -13,6 +13,6 @@
         android:layout_width="200px"
         android:layout_height="wrap_content"
         android:id="@+id/return_activity_main"
-        android:text=" 返回首页"/>
+        android:text="回首页"/>
 
 </LinearLayout>
