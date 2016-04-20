@@ -20,4 +20,6 @@
         android:layout_height="wrap_content"
         android:text="游戏规则"
         android:id="@+id/btnInstruction"/>
+
+
 </LinearLayout>
