@@ -10,9 +10,18 @@ public abstract  class BroadCastBaseHelper {
      * 接收数据的监听器
      */
     protected BroadCastBaseHelper.OnReceiveMsgListener mListener;
-
+    protected BroadCastBaseHelper.OnNetworkErrorListenr mErrorListner;
     public void setOnReceiveMsgListener(OnReceiveMsgListener listener){
         this.mListener=listener;
+    }
+    public  void removeOnReceiveMsgListener(){
+        this.mListener=null;
+    }
+    public void setOnNetworkErrorListenr(OnNetworkErrorListenr listner) {
+        this.mErrorListner =listner;
+    }
+    public void removeOnNetworkErrorListenr(){
+        this.mErrorListner=null;
     }
 
     /**
@@ -35,5 +44,7 @@ public abstract  class BroadCastBaseHelper {
     public interface OnReceiveMsgListener{
         void onReceive(BroadCastBaseMsg msg);
     }
-
+    public interface OnNetworkErrorListenr{
+        void handleError(Exception e);
+    }
 }
