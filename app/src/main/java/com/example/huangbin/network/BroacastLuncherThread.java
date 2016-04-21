@@ -32,12 +32,13 @@ public class BroacastLuncherThread extends Thread {
             while (stopThread) {
                 mBroacastGrouperHelper.sendMsg(mSelfIP);
                 Log.e("doit","broast ip"+mSelfIP);
-//                try {
-////                   mLock.wait();
-//                    Thread.sleep(1000);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
+                try {
+                    mLock.wait(1000);
+                    //Thread.sleep(1000);
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

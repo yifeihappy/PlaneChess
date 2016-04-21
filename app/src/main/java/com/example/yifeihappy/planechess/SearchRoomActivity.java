@@ -48,9 +48,10 @@ public class SearchRoomActivity extends AppCompatActivity {
                                                          @Override
                                                          public void onReceive(BroadCastBaseHelper.BroadCastBaseMsg msg) {
 
+                                                             Log.e("doit","before handler"+msg.ip);
                                                              Message message = handler.obtainMessage();
                                                              Bundle bundle = new Bundle();
-                                                             bundle.putString("ip",ip);
+                                                             bundle.putString("ip",msg.ip);
                                                              message.what = 0x101;
                                                              message.setData(bundle);
                                                              handler.sendMessage(message);

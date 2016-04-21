@@ -18,7 +18,7 @@ public class BroascastGroupHelper extends BroadCastBaseHelper {
     /**
      * 组播的ip，端口，地址对象
      */
-    private static final  String GOUP_ADDR="230.0.0.1";
+    private static final  String GOUP_ADDR="224.0.0.1";
     private int mPort;
     private static InetAddress mGroupInetAddress;
 
@@ -53,7 +53,7 @@ public class BroascastGroupHelper extends BroadCastBaseHelper {
         try {
             mGroupInetAddress=InetAddress.getByName(GOUP_ADDR);
             mMulticastSocket=new MulticastSocket(port);
-            if(mMulticastSocket==null) Log.e("doit","mMulticastSocket null");
+            //if(mMulticastSocket==null) Log.e("doit","mMulticastSocket null");
             mMulticastSocket.setTimeToLive(timeToLive);
         } catch (UnknownHostException e) {
             e.printStackTrace();
@@ -154,7 +154,9 @@ public class BroascastGroupHelper extends BroadCastBaseHelper {
         msg.ip=mRecvData.getAddress().getHostName();
         msg.port=mRecvData.getPort();
         msg.msg=mRecvData.getData();
+        if(this.mListener==null) Log.e("doit","mListener null");
         if(this.mListener!=null){
+            Log.e("doit","before onReceive");
             this.mListener.onReceive(msg);
         }
         return  true;

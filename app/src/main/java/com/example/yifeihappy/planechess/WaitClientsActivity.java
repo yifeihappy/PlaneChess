@@ -21,7 +21,7 @@ public class WaitClientsActivity extends AppCompatActivity {
     BroascastGroupHelper broascastGroupHelper=null;
     BroacastLuncherThread broacastLuncherThread = null;
     Thread  countClientListenThread = null;
-    boolean stopListen = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -70,6 +70,7 @@ public class WaitClientsActivity extends AppCompatActivity {
 
     class CountClientListenThread extends Thread {
         private Object mLock = new Object();
+        boolean stopListen = false;
         public void stopThread() {
             synchronized (mLock) {
                 stopListen = true;
