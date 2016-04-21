@@ -1,11 +1,12 @@
 package com.example.huangbin.network;
 
 import android.content.Context;
+import android.util.Log;
 
 /**
  * Created by Huangbin on 2016/4/19.
  */
-public class BroacastLuncherThread implements Runnable {
+public class BroacastLuncherThread extends Thread {
     private  volatile boolean stopThread=true;
     private  BroascastGroupHelper mBroacastGrouperHelper;
     private   Context mCoontext;
@@ -30,11 +31,13 @@ public class BroacastLuncherThread implements Runnable {
         synchronized (mLock) {
             while (stopThread) {
                 mBroacastGrouperHelper.sendMsg(mSelfIP);
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                Log.e("doit","broast ip"+mSelfIP);
+//                try {
+////                   mLock.wait();
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
             }
         }
     }

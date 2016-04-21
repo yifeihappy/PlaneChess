@@ -1,9 +1,12 @@
 package com.example.huangbin.network;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 
 /**
@@ -15,7 +18,7 @@ public class BroascastGroupHelper extends BroadCastBaseHelper {
     /**
      * 组播的ip，端口，地址对象
      */
-    private static final  String GOUP_ADDR="224.0.0.1";
+    private static final  String GOUP_ADDR="230.0.0.1";
     private int mPort;
     private static InetAddress mGroupInetAddress;
 
@@ -36,8 +39,8 @@ public class BroascastGroupHelper extends BroadCastBaseHelper {
     /**
      * 主机加入组播地址以及离开的监听对象
      */
-    private OnAddressJoinGroupLisener mJoinGroupLisener;
-    private OnAddressLeaveGroupLisener mLeaveGroupLisener;
+    private OnAddressJoinGroupLisener mJoinGroupLisener = null;
+    private OnAddressLeaveGroupLisener mLeaveGroupLisener = null;
 
 
     /**
@@ -50,6 +53,7 @@ public class BroascastGroupHelper extends BroadCastBaseHelper {
         try {
             mGroupInetAddress=InetAddress.getByName(GOUP_ADDR);
             mMulticastSocket=new MulticastSocket(port);
+            if(mMulticastSocket==null) Log.e("doit","mMulticastSocket null");
             mMulticastSocket.setTimeToLive(timeToLive);
         } catch (UnknownHostException e) {
             e.printStackTrace();
@@ -73,6 +77,7 @@ public class BroascastGroupHelper extends BroadCastBaseHelper {
      */
     public boolean joinGroup(){
         try {
+            if(mMulticastSocket==null) Log.e("doit","mMulticastSocket null");
             mMulticastSocket.joinGroup(mGroupInetAddress);
         } catch (IOException e) {
             e.printStackTrace();
@@ -85,6 +90,14 @@ public class BroascastGroupHelper extends BroadCastBaseHelper {
         return true;
     }
 
+    public void setLoopback(boolean enble){
+        try {
+            this.mMulticastSocket.setLoopbackMode(enble);
+        } catch (SocketException e) {
+            e.printStackTrace();
+            if(mErrorListner!=null) mErrorListner.handleError(e);
+        }
+    }
     /**
      * 主机离开组播
      * @return
@@ -129,7 +142,9 @@ public class BroascastGroupHelper extends BroadCastBaseHelper {
     public boolean receiveMsg(){
 
         try {
+            Log.e("doit","begin");
             mMulticastSocket.receive(mRecvData);
+            Log.e("doit", "after receive");
         } catch (IOException e) {
             e.printStackTrace();
             if(mErrorListner!=null) mErrorListner.handleError(e);
