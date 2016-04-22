@@ -20,20 +20,21 @@ public class SearchRoomActivity extends AppCompatActivity {
     BroascastGroupHelper broascastGroupHelper = null;
     String ip = null;
     Handler handler = null;
-    TextView txtRoomIP=null;
+    TextView txtRoomIP = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.search_room);
         Log.e("doit", "begin onCreate");
-       txtRoomIP = (TextView)findViewById(R.id.txtRoomIP);
+        txtRoomIP = (TextView) findViewById(R.id.txtRoomIP);
 
         handler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
 
-                if(msg.what == 0x101) {
+                if (msg.what == 0x101) {
                     txtRoomIP.setText(msg.getData().getString("ip"));
                 }
                 super.handleMessage(msg);
@@ -41,17 +42,17 @@ public class SearchRoomActivity extends AppCompatActivity {
         };
 
         broascastGroupHelper = new BroascastGroupHelper(30000);
-        boolean success=broascastGroupHelper.joinGroup();
-       if(success) Log.e("doit","succsss");
+        boolean success = broascastGroupHelper.joinGroup();
+        if (success) Log.e("doit", "succsss");
         broascastGroupHelper.setOnReceiveMsgListener(new BroascastGroupHelper.OnReceiveMsgListener() {
 
                                                          @Override
                                                          public void onReceive(BroadCastBaseHelper.BroadCastBaseMsg msg) {
 
-                                                             Log.e("doit","before handler"+msg.ip);
+                                                             Log.e("doit", "before handler" + msg.ip);
                                                              Message message = handler.obtainMessage();
                                                              Bundle bundle = new Bundle();
-                                                             bundle.putString("ip",msg.ip);
+                                                             bundle.putString("ip", msg.ip);
                                                              message.what = 0x101;
                                                              message.setData(bundle);
                                                              handler.sendMessage(message);
@@ -64,7 +65,7 @@ public class SearchRoomActivity extends AppCompatActivity {
         SearchRoomListernThread searchRoomListernThread = new SearchRoomListernThread();
         searchRoomListernThread.start();//search room IP
 
-        Button btnEnter = (Button)findViewById(R.id.btnEnter);
+        Button btnEnter = (Button) findViewById(R.id.btnEnter);
 
         btnEnter.setOnClickListener(new View.OnClickListener() {
             @Override
