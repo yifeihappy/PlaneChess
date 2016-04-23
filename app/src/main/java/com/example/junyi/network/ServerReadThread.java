@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.net.SocketException;
 
 /**
  * Created by Timer on 2016/4/13.
@@ -28,7 +29,12 @@ public class ServerReadThread extends Thread {
     public void run() {
         try {
             while(true) {
+                if (this.isInterrupted()) {
+                    throw new InterruptedException("accept thread has been interrupter");
+                }
                 String str = in.readLine();
+                if(str == null)
+                    throw new SocketException("data is null");
                 byte ch = (byte) str.charAt(0);
                 String info = str.substring(1);
                 NetMsg m = new NetMsg(info, (byte) (ch&0x03));
@@ -40,7 +46,12 @@ public class ServerReadThread extends Thread {
                 }
             }
         } catch (IOException e) {
+            if(e instanceof SocketException) {
+                //读取数据出现错误，或者连接已关闭
+            }
             e.printStackTrace();
+        } catch (InterruptedException e) {
+            this.interrupt();
         }
     }
 }
