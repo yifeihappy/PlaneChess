@@ -14,6 +14,8 @@ import com.example.jinbo.struct.Room;
 import com.example.jinbo.struct.Square;
 import com.example.yifeihappy.planechess.R;
 
+import java.util.List;
+
 public class Drawview extends View {
 
 	Room room;        //没什么用，只是为了获取room中的数据。
@@ -28,7 +30,7 @@ public class Drawview extends View {
 
 	boolean Init = true;
 
-	UpdateThread thread;
+	public UpdateThread thread;   //动画线程
 
 	public void setRoom(Room room)
 	{
@@ -71,6 +73,7 @@ public class Drawview extends View {
 	public void setCell(float x,float y)
 	{
 		Log.i("touch", "doxy: " + x + " " + y);
+
 
 		int position = -1;      //这里还没设置好参数
 		Square square = room.game.getBoard().getSquare(position);
@@ -180,6 +183,12 @@ public class Drawview extends View {
 		paint.setStyle(Paint.Style.FILL);
 		paint.setStrokeWidth(3);
 
+		//要遍历一遍所有的方格重绘。
+		List<Chess> list = room.game.getAllchess();
+		for(int i=0;i<list.size();i++)
+		{
+
+		}
 
 	}
 

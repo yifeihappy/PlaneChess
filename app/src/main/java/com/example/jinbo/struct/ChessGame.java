@@ -23,6 +23,13 @@ public class ChessGame {
     //优先走的棋子，最多4个
     private List<Chess> preferChess = new ArrayList<Chess>();
 
+    private List<Chess> allchess =   new ArrayList<Chess>();
+
+    public List<Chess> getAllchess()    //获得棋盘上所有的棋子。
+    {
+        return allchess;
+    }
+
     public ChessGame() {
         initChess();
         initBoard();
