@@ -9,8 +9,13 @@ import java.util.List;
  * Created by Administrator on 2016/3/26.
  */
 public class Room {
+
+    public boolean ismove;
+
     public ChessGame game=new ChessGame();
+
     private int player_num=4;
+
     private List<Player> players=new ArrayList<Player>();
     //是否结束的标志，false未结束
     public boolean Over=false;
@@ -20,6 +25,17 @@ public class Room {
     public boolean pass=false;
     //名次
     private int rank=1;
+
+    public int start;
+
+    public int end;
+
+    private Chess chosenChess = null;
+
+    public void setchosechess(Chess chess)
+    {
+        chosenChess = chess;
+    }
 
     public Room() {
         this.player_num=0;
@@ -66,7 +82,7 @@ public class Room {
                 pass=false;
                 continue;
             }
-            Chess chosenChess = null;
+
             //如果有需要有优先走的棋子
             if(this.game.getPreferChess().size() > 0) {
                 for(int i=0;i<this.game.getPreferChess().size();i++) {
@@ -85,8 +101,10 @@ public class Room {
                     //如果玩家点击了其他颜色的棋子需要重新选择
                 }
             }
+            ismove = false;
             //移动棋子
             this.game.moveChess(chosenChess,step);
+            ismove = true;
             //UI添加动画
 /************************************这一部分可能要修改*****************************************/
             if(this.game.getBoard().getSquare(chosenChess.getPoint()).getColor() == chosenChess.getColor()) {
