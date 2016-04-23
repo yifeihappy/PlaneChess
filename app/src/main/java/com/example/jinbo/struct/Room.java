@@ -9,8 +9,13 @@ import java.util.List;
  * Created by Administrator on 2016/3/26.
  */
 public class Room {
+
+    public boolean ismove;
+
     public ChessGame game=new ChessGame();
+
     private int player_num=4;
+
     private List<Player> players=new ArrayList<Player>();
     //是否结束的标志，false未结束
     public boolean Over=false;
@@ -21,6 +26,17 @@ public class Room {
     //名次
     private int rank=1;
 
+    public int start;
+
+    public int end;
+
+    private Chess chosenChess = null;
+
+    public void setchosechess(Chess chess)
+    {
+        chosenChess = chess;
+    }
+
     public Room() {
         this.player_num=0;
     }
@@ -29,6 +45,21 @@ public class Room {
         for(int i=0;i<num;i++) {
             this.players.add(new Player());
         }
+    }
+
+    /*新增：myChess(Player) --位于Room
+    @param Player 选择棋子的玩家
+    @return List<Chess> list返回这个玩家控制的棋子的列表
+     */
+    public List<Chess> myChess(Player player) {
+        int c = player.getColor();
+        List<Chess> list=new ArrayList<Chess>();
+        for(int i=0;i<16;i++) {
+            if(this.game.getAllchess().get(i).getColor() == c){
+                list.add(this.game.getAllchess().get(i));
+            }
+        }
+        return list;
     }
 
     public Room(int num, List<Player> players) {
@@ -60,13 +91,35 @@ public class Room {
         while(!Over) {
             //玩家点击掷骰
             int step=this.game.getDice().rollDice();
+            //设置一个flag：canPass表明能不能pass
+            boolean canPass=true;
+            if(step==6) {  //如果是6，一定要走
+                canPass=false;
+                pass=false;
+            }
+            //当所有棋子都在基地 且
+            int playColor=players.get(turn).getColor(); //玩家的颜色
+            for(int i=0;i<4;i++) {
+                if(myChess(players.get(turn)).get(i).getPoint() != -1 &&
+                        !this.game.finished(myChess(players.get(turn)).get(i)) ) { //只要有棋子不在基地且不在终点
+                    canPass=true;
+                }
+            }
+            if(canPass) {
+                //如果玩家可以按pass 再来检测有没有按  -- 给PASS赋值
+            }
+
+
             //查看玩家是否按了pass
             if(pass)
             {
                 pass=false;
+                if(step != 6) {
+                    turn = (turn + 1) % this.player_num;
+                }
                 continue;
             }
-            Chess chosenChess = null;
+
             //如果有需要有优先走的棋子
             if(this.game.getPreferChess().size() > 0) {
                 for(int i=0;i<this.game.getPreferChess().size();i++) {
@@ -85,8 +138,10 @@ public class Room {
                     //如果玩家点击了其他颜色的棋子需要重新选择
                 }
             }
+            ismove = false;
             //移动棋子
             this.game.moveChess(chosenChess,step);
+            ismove = true;
             //UI添加动画
 /************************************这一部分可能要修改*****************************************/
             if(this.game.getBoard().getSquare(chosenChess.getPoint()).getColor() == chosenChess.getColor()) {

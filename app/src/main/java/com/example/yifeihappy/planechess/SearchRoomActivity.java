@@ -31,18 +31,20 @@ public class SearchRoomActivity extends AppCompatActivity {
     TextView txtRoomIP=null;
     SerliBroacastData serliBroacastData = null;
     Button btnEnter = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.search_room);
+
        // Log.e("doit", "begin onCreate");
 
        txtRoomIP = (TextView)findViewById(R.id.txtRoomIP);
-
         handler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
+
 
                 Bundle bundle = msg.getData();
 
@@ -50,6 +52,7 @@ public class SearchRoomActivity extends AppCompatActivity {
                     SerliBroacastData serliRoomData = new SerliBroacastData();
                     serliRoomData = (SerliBroacastData)bundle.getSerializable(CREATE_ROOM);
                     txtRoomIP.setText(serliRoomData.getRoomIP());
+
                 }
                 btnEnter.setEnabled(true);
                 super.handleMessage(msg);
@@ -57,10 +60,12 @@ public class SearchRoomActivity extends AppCompatActivity {
         };
 
         broascastGroupHelper = new BroascastGroupHelper(30000);
+
         broascastGroupHelper.joinGroup();
         //boolean success=broascastGroupHelper.joinGroup();
        //if(success) Log.e("doit","succsss");
         broascastGroupHelper.setLoopback(true);
+
         broascastGroupHelper.setOnReceiveMsgListener(new BroascastGroupHelper.OnReceiveMsgListener() {
 
                                                          @Override
@@ -72,6 +77,7 @@ public class SearchRoomActivity extends AppCompatActivity {
                                                              Message message = handler.obtainMessage();
                                                              Bundle bundle = new Bundle();
                                                              bundle.putSerializable(CREATE_ROOM,serliBroacastData);
+
                                                              message.what = 0x101;
                                                              message.setData(bundle);
                                                              handler.sendMessage(message);
@@ -85,6 +91,7 @@ public class SearchRoomActivity extends AppCompatActivity {
         receiveRoomIPLooperThread.start();
 
         btnEnter = (Button)findViewById(R.id.btnEnter);
+
 
         btnEnter.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -23,6 +23,46 @@ public class ChessGame {
     //优先走的棋子，最多4个
     private List<Chess> preferChess = new ArrayList<Chess>();
 
+    //private List<Chess> allchess =   new ArrayList<Chess>();
+
+    /*
+   获取棋子列表--位于ChessGame
+    */
+    public List<Chess> getAllchess() {
+        List<Chess> list=new ArrayList<Chess> ();
+        for(int i=0;i<16;i++) {
+            list.add(this.chess[i]);
+        }
+        return list;
+    }
+
+    /*
+   判断棋子是否在终点--位于ChessGame
+    */
+    public boolean finished(Chess chess) {
+        int goal=-100;
+        switch (chess.getColor()) {
+            case Color.RED:
+                goal=65;
+                break;
+            case Color.GREEN:
+                goal=75;
+                break;
+            case Color.BLUE:
+                goal=85;
+                break;
+            case Color.YELLOW:
+                goal=95;
+                break;
+            default:
+                goal=-100;
+        }
+        if(chess.getPoint() == goal)
+            return true;
+        else
+            return false;
+    }
+
     public ChessGame() {
         initChess();
         initBoard();
