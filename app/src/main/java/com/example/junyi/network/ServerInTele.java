@@ -6,6 +6,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.LinkedList;
 
 /**
@@ -55,6 +56,7 @@ class MsgQueue {
         synchronized (mq) {
             if(mq.isEmpty()) {
                 try {
+                    //如果mq为空，释放mq锁，并进入阻塞
                     mq.wait();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -82,7 +84,7 @@ class MsgQueue {
  * 如果index为2的玩家是电脑玩家，则网络连接数据为空
  */
 public class ServerInTele {
-    static final int PORT = 0;
+    static final int PORT = 1188;
     protected ServerSocket server = null;
     protected Integer n = 0;
     protected Socket clientsocket[] = new Socket[4];
@@ -116,23 +118,41 @@ public class ServerInTele {
 
     /**
      * 新建一个线程监听客户端发来的连接请求，每当有连接建立，会新建一个线程监听发送来的数据
+     * 并将一条from为0x60，data为n的数据加入消息队列
      */
     public void accept() {
         accptthread = new Thread() {
             @Override
             public void run() {
-                while(n<4) {
-                    try {
+                try {
+                    while (n < 4) {
+                        if (this.isInterrupted()) {
+                            throw new InterruptedException("accept thread has been interrupter");
+                        }
                         synchronized (n) {
                             clientsocket[n] = server.accept();
                             out[n] = new PrintWriter(new BufferedWriter(new OutputStreamWriter
                                     (clientsocket[n].getOutputStream())), true);
                             thread[n] = new ServerReadThread(ServerInTele.this, clientsocket[n]);
+                            NetMsg m = new NetMsg(n.toString(), (byte) 0x60);
+                            msg.addData(m);
                             n++;
                         }
-                    } catch (IOException e) {
-                        e.printStackTrace();
                     }
+                } catch (IOException e) {
+                    if (e instanceof SocketException) {
+                        //Socket is not bound or Socket output is shutdown orSocket input is shutdown
+                        if ("Socket output is shutdown".equals(e.getMessage())) {
+                            close(n--);
+                        } else if ("Socket input is shutdown".equals(e.getMessage())) {
+                            close(n--);
+                        } else {
+                            //socket未连接
+                        }
+                    }
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    this.interrupt();
                 }
             }
         };
@@ -169,7 +189,7 @@ public class ServerInTele {
     public void send(int index, NetMsg data) {
         if(index != 0){
             if (clientsocket[index] != null) {
-                out[index].println(data);
+                out[index].println(data.from + data.data);
             }
         }
     }
@@ -181,7 +201,7 @@ public class ServerInTele {
     public void sendToAll(NetMsg data) {
         for(int i = 1; i<n; i++) {
             if(clientsocket[i] != null) {
-                out[i].println(data);
+                out[i].println(data.from + data.data);
             }
         }
     }
@@ -197,24 +217,45 @@ public class ServerInTele {
     /**
      * 关闭指定玩家的网络连接
      * @param index 指定玩家的索引
-     * @throws IOException
      */
-    public void close(int index) throws IOException {
+    public void close(int index){
         out[index] = null;
-        thread[index].interrupt();
-        clientsocket[index].close();
+        if(thread[index] != null) {
+            thread[index].interrupt();
+        }
+        try {
+            clientsocket[index].close();
+        } catch (IOException e) {
+            //关闭连接失败，或者连接已经关闭
+            clientsocket[index] = null;
+            e.printStackTrace();
+        }
     }
 
     /**
      * 关闭所有玩家的网络连接
      * @throws IOException
      */
-    public void closeAll() throws IOException {
-        for (int index = 0; index < n; index++) {
+    public void closeAll(){
+        for (int index = 1; index < n; index++) {
             out[index] = null;
-            thread[index].interrupt();
-            clientsocket[index].close();
+            if(thread[index] != null) {
+                thread[index].interrupt();
+            }
+            try {
+                clientsocket[index].close();
+            } catch (IOException e) {
+                //关闭连接失败，或者连接已经关闭
+                clientsocket[index] = null;
+                e.printStackTrace();
+            }
         }
-        server.close();
+        try {
+            server.close();
+        } catch (IOException e) {
+            //关闭客户端失败，或者客户端已经关闭
+            server = null;
+            e.printStackTrace();
+        }
     }
 }
