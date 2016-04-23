@@ -68,7 +68,7 @@ public class BroascastGroupHelper extends BroadCastBaseHelper {
         this(port,1);
     }
     public BroascastGroupHelper(){
-        this(9999,1);
+        this(30000,1);
     }
 
     /**
@@ -142,9 +142,9 @@ public class BroascastGroupHelper extends BroadCastBaseHelper {
     public boolean receiveMsg(){
 
         try {
-            Log.e("doit","begin");
+            //Log.e("doit","begin");
             mMulticastSocket.receive(mRecvData);
-            Log.e("doit", "after receive");
+            //Log.e("doit", "after receive");
         } catch (IOException e) {
             e.printStackTrace();
             if(mErrorListner!=null) mErrorListner.handleError(e);
@@ -156,7 +156,7 @@ public class BroascastGroupHelper extends BroadCastBaseHelper {
         msg.msg=mRecvData.getData();
         if(this.mListener==null) Log.e("doit","mListener null");
         if(this.mListener!=null){
-            Log.e("doit","before onReceive");
+            //Log.e("doit","before onReceive");
             this.mListener.onReceive(msg);
         }
         return  true;

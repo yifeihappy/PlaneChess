@@ -49,14 +49,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="WHITE"
-                android:id="@+id/whiteradio1"
-                android:checked="true"/>
+                android:id="@+id/whiteradio1" />
         </RadioGroup>
     </LinearLayout>
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/crbtn"
+        android:id="@+id/btnEnter"
         android:text="确定"/>
 
 </LinearLayout>

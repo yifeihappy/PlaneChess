@@ -56,6 +56,7 @@ public class Client {
      * @param data 发送的数据
      */
     public void sendToServer(NetMsg data) {
+
         out.println(data.from + data.data);
     }
 

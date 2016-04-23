@@ -9,16 +9,16 @@ import android.util.Log;
 public class BroacastLuncherThread extends Thread {
     private  volatile boolean stopThread=true;
     private  BroascastGroupHelper mBroacastGrouperHelper;
-    private   Context mCoontext;
-    private   String mSelfIP;
+    //private   Context mCoontext;
+    private   String data;
     private Object mLock=new Object();
     /**
      * @param helper BroascastGroupHelper第一个发起者
      * @param ip     ip一定不能为空
      */
-    public BroacastLuncherThread(BroascastGroupHelper helper,String ip) {
+    public BroacastLuncherThread(BroascastGroupHelper helper,String data) {
        this.mBroacastGrouperHelper=helper;
-        this.mSelfIP=ip;
+        this.data=data;
     }
 
     public  void stopThread(){
@@ -30,10 +30,10 @@ public class BroacastLuncherThread extends Thread {
     public void run() {
         synchronized (mLock) {
             while (stopThread) {
-                mBroacastGrouperHelper.sendMsg(mSelfIP);
-                Log.e("doit","broast ip"+mSelfIP);
+                mBroacastGrouperHelper.sendMsg(data);
+                //Log.e("doit","broast ip"+mSelfIP);
                 try {
-                    mLock.wait(1000);
+                    mLock.wait(2000);
                     //Thread.sleep(1000);
 
                 } catch (InterruptedException e) {
