@@ -7,7 +7,7 @@ import android.graphics.Paint;
 public class Cell {
 	private int x;
 	private int y;
-
+	public int x0,y0,x1,y1;
 	public Cell()
 	{
 
@@ -16,6 +16,10 @@ public class Cell {
 	{
 		this.x=(x0+x1)/2;
 		this.y=(y0+y1)/2;
+		this.x0=x0;
+		this.y0=x0;
+		this.x1=x0;
+		this.y1=x0;
 		canvas.drawRect(x0,y0,x1,y1, paint);
 		paint.setColor(Color.WHITE);
 		canvas.drawCircle(x,y,11, paint);

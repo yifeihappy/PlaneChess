@@ -11,15 +11,17 @@ public class UpdateThread extends Thread{
         this.view = view;
     }
 
+    /*
     boolean flyend()   //判断是否已经走完这一步
     {
         if(view.starts != view.ends)return true;
         else return false;
     }
+    */
 
     public void run()
     {
-        while(!flyend())
+        while(!view.flyend())
         {
             view.postInvalidate();
             try {

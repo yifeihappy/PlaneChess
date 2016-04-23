@@ -28,8 +28,8 @@ public class Board {
     public Board() {
         //initSquare();
     }
+    //获取最大方格数量
     /*
-    获取最大方格数量
     @return int 数量
      */
     public int getMaxSquareNum() {
