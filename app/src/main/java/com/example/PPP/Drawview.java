@@ -1,9 +1,11 @@
 package com.example.PPP;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -185,6 +187,40 @@ public class Drawview extends View {
 		}
 	}
 
+	public static void drawImage(Canvas canvas, Bitmap blt, int x, int y,
+								 int w, int h, int bx, int by) {
+		Rect src = new Rect();// 图片 >>原矩形
+		Rect dst = new Rect();// 屏幕 >>目标矩形
+
+		src.left = bx;
+		src.top = by;
+		src.right = bx + w;
+		src.bottom = by + h;
+
+		dst.left = x;
+		dst.top = y;
+		dst.right = x + w;
+		dst.bottom = y + h;
+		// 画出指定的位图，位图将自动--》缩放/自动转换，以填补目标矩形
+		// 这个方法的意思就像 将一个位图按照需求重画一遍，画后的位图就是我们需要的了
+		canvas.drawBitmap(blt, null, dst, null);
+		src = null;
+		dst = null;
+	}
+
+	/**
+	 * 绘制一个Bitmap
+	 *
+	 * @param canvas 画布
+	 * @param bitmap 图片
+	 * @param x 屏幕上的x坐标
+	 * @param y 屏幕上的y坐标
+	 */
+
+	public static void drawImage(Canvas canvas, Bitmap bitmap, int x, int y) {
+		// 绘制图像 将bitmap对象显示在坐标 x,y上
+		canvas.drawBitmap(bitmap, x, y, null);
+	}
 	public void fly(Canvas canvas)
 	{
 		Paint paint=new Paint();
@@ -196,25 +232,29 @@ public class Drawview extends View {
 		init(canvas);    //重绘棋盘
 		//要遍历一遍所有的棋子重绘。
 
+		Chess tmp = new Chess();   //这个棋子实现中途的飞行更新。
 		List<Chess> list = room.game.getAllchess();
 		for(int i=0;i<list.size();i++)
 		{
-			if(list.get(i).getPoint() == starts)continue;
+			//此时被点击的那个棋子的point已经到了该步的终点。
+			if(list.get(i).getPoint() == ends)continue;
 			/*
-			* 画棋子,但现在还没有棋子的形状
+			* 画棋子tmp,但现在还没有棋子的形状
 			* */
 			//设置颜色list.get(i).getcolor
-			//cell[i].x0,y0,x1,y1
+			//cell[list.get(i).getpoint()].x0,y0,x1,y1
 			//paint.setColor(getResources().getColor());
 			//canvas.drawArc();
+			//drawImage();
 		}
 
 		//可能starts还要初始化那里判断或搞一些
 		if(!flyend())
 		{
 			//canvas.drawArc();
+			//cell[start].x0.y0.x1.y1
+			//drawImage();
 			starts++;     //走完这一步，移到下一格
-
 		}
 
 	}
