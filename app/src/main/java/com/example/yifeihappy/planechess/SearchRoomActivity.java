@@ -20,11 +20,12 @@ import java.util.StringTokenizer;
 
 public class SearchRoomActivity extends AppCompatActivity {
 
-    public static final String ENTER_ROOM = "ENTERROOM";
-    public static final String CREATE_ROOM = "CREATEROOM";
-    public static final String WELCOME = "WELCOME";
-    public static final String REFUSE = "REFUSE";
-    public static final String BEGIN = "BEGIN";
+    public static final String ENTER_ROOM = "EN";//ENTERROOM
+    public static final String CREATE_ROOM = "CR";//CREATEROOM
+    public static final String WELCOME = "WE";//WELCOME
+    public static final String REFUSE = "RE";//REFUSE
+    public static final String BEGIN = "BE";//BEGIN
+
 
     BroascastGroupHelper broascastGroupHelper = null;
     Handler handler = null;
@@ -74,13 +75,17 @@ public class SearchRoomActivity extends AppCompatActivity {
 
                                                              Deserializable deserializable = new Deserializable();
                                                              serliBroacastData = deserializable.deSerliBroacastData(msg.msg);
-                                                             Message message = handler.obtainMessage();
-                                                             Bundle bundle = new Bundle();
-                                                             bundle.putSerializable(CREATE_ROOM,serliBroacastData);
+                                                             //only handle the message CREATE_ROOM
+                                                             if(serliBroacastData.getTag().startsWith(CREATE_ROOM)) {
+                                                                 Message message = handler.obtainMessage();
+                                                                 Bundle bundle = new Bundle();
+                                                                 bundle.putSerializable(CREATE_ROOM,serliBroacastData);
 
-                                                             message.what = 0x101;
-                                                             message.setData(bundle);
-                                                             handler.sendMessage(message);
+                                                                 message.what = 0x101;
+                                                                 message.setData(bundle);
+                                                                 handler.sendMessage(message);
+                                                             }
+
                                                          }
                                                      }
 
@@ -97,11 +102,13 @@ public class SearchRoomActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                Log.e("doit","before stop");
                 //stop to receive room ip
                 receiveRoomIPLooperThread.stopThread();
 
+                Log.e("doit","afterstop");
                 Bundle bundle = new Bundle();
-                bundle.putSerializable(CREATE_ROOM,serliBroacastData);
+                bundle.putSerializable(CREATE_ROOM, serliBroacastData);
                 Intent intent = new Intent(SearchRoomActivity.this, UserSettingActivity.class);
                 intent.putExtras(bundle);
                 startActivity(intent);

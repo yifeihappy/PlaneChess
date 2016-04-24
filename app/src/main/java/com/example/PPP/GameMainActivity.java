@@ -8,12 +8,12 @@ import android.view.WindowManager;
 
 import com.example.yifeihappy.planechess.R;
 
-public class MainActivity extends AppCompatActivity {
+public class GameMainActivity extends AppCompatActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.room);
+		setContentView(R.layout.end);
 
 
 	}

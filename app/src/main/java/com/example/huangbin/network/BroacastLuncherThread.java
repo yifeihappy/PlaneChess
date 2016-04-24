@@ -12,6 +12,7 @@ public class BroacastLuncherThread extends Thread {
     //private   Context mCoontext;
     private   String data;
     private Object mLock=new Object();
+    private int waitTime;
     /**
      * @param helper BroascastGroupHelper第一个发起者
      * @param ip     ip一定不能为空
@@ -19,6 +20,13 @@ public class BroacastLuncherThread extends Thread {
     public BroacastLuncherThread(BroascastGroupHelper helper,String data) {
        this.mBroacastGrouperHelper=helper;
         this.data=data;
+        waitTime = 1000;
+    }
+
+    public BroacastLuncherThread(BroascastGroupHelper helper,String data,int waitTime) {
+        this.mBroacastGrouperHelper=helper;
+        this.data=data;
+        this.waitTime = waitTime;
     }
 
     public  void stopThread(){
@@ -33,7 +41,7 @@ public class BroacastLuncherThread extends Thread {
                 mBroacastGrouperHelper.sendMsg(data);
                 //Log.e("doit","broast ip"+mSelfIP);
                 try {
-                    mLock.wait(2000);
+                    mLock.wait(waitTime);
                     //Thread.sleep(1000);
 
                 } catch (InterruptedException e) {

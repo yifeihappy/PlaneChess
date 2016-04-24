@@ -29,11 +29,12 @@ public class UserSettingActivity extends AppCompatActivity {
     BroacastLuncherThread enterRoomThread = null;
     Button btnEnter = null;
 
-    public static final String ENTER_ROOM = "ENTERROOM";
-    public static final String CREATE_ROOM = "CREATEROOM";
-    public static final String WELCOME = "WELCOME";
-    public static final String REFUSE = "REFUSE";
-    public static final String BEGIN = "BEGIN";
+    public static final String ENTER_ROOM = "EN";//ENTERROOM
+    public static final String CREATE_ROOM = "CR";//CREATEROOM
+    public static final String WELCOME = "WE";//WELCOME
+    public static final String REFUSE = "RE";//REFUSE
+    public static final String BEGIN = "BE";//BEGIN
+
 
     Handler handler = new Handler() {
         @Override
@@ -45,45 +46,31 @@ public class UserSettingActivity extends AppCompatActivity {
 
             //the msg is to answer other players  or the msg is refuse to meet this player
             if(msg.what==0x201||msg.what==0x401) {
-                for(int i = 0; i<radioGroupColor.getChildCount(); i++) {
-                    RadioButton radioButton = (RadioButton)radioGroupColor.getChildAt(i);
-                    //find the selected color ,if the button is the default checked button.
-                    if(radioButton.getText().toString().equals(planeColor)&&radioButton.isChecked()) {
-
-                        radioGroupColor.clearCheck();
-                        //select a new default checked radiobutton
-                        for(int j = (i+1)%4;;j=(++j)%4) {
-                            RadioButton radioButtonCheck = (RadioButton)radioGroupColor.getChildAt(j);
-                            if(!radioButtonCheck.isChecked()) {
-                                radioButtonCheck.setChecked(true);
-                                break;
-                            }
-                        }
-                        radioButton.setEnabled(false);
-
+                RadioButton radioButton = (RadioButton)radioGroupColor.getChildAt(Integer.parseInt(planeColor));
+                radioButton.setEnabled(false);
+                radioGroupColor.clearCheck();
+                for(int j = 0;;j=(++j)%4) {
+                    RadioButton radioButtonCheck = (RadioButton)radioGroupColor.getChildAt(j);
+                    if(j != Integer.parseInt(planeColor)) {
+                        radioButtonCheck.setChecked(true);
                         break;
                     }
-
                 }
             }
 
 
             //the msg is welcome to meet this player, just wait to begin and has no right to select planecolor.
             if(msg.what == 0x200) {
-//                for(int i = 0; i<radioGroupColor.getChildCount(); i++) {
-//                    RadioButton radioButton = (RadioButton)radioGroupColor.getChildAt(i);
-//                    if(radioButton.getText().toString().equals(planeColor)) {
-//                        radioButton.setEnabled(false);
-//                        Toast.makeText(UserSettingActivity.this,"Waiting to begin.",Toast.LENGTH_LONG).show();
-//                    }
-//                }
                 Toast.makeText(UserSettingActivity.this,"Waiting to begin.",Toast.LENGTH_LONG).show();
-                radioGroupColor.setEnabled(false);
+                //radioGroupColor.setEnabled(false);
                 EditText edtName = (EditText)findViewById(R.id.edtName);
                 edtName.setEnabled(false);
-
-                btnEnter.setEnabled(false);
-
+                for(int i = 0;i<radioGroupColor.getChildCount();i++) {
+                    RadioButton radioButton = (RadioButton)radioGroupColor.getChildAt(i);
+                    radioButton.setEnabled(false);
+                }
+                //radioGroupColor.setEnabled(false);
+                //btnEnter.setEnabled(false);
             }
             //you need to select again.
             if(msg.what == 0x401) {
@@ -108,28 +95,23 @@ public class UserSettingActivity extends AppCompatActivity {
 
         //set the planeColor which the creater of the room has selected enable = false
         RadioGroup radioGroupColor = (RadioGroup)findViewById(R.id.radiogroupColor);
-        for(int i = 0; i<radioGroupColor.getChildCount(); i++) {
-            RadioButton radioButton = (RadioButton)radioGroupColor.getChildAt(i);
-            if(radioButton.getText().toString().equals(planeColor)) {
-                radioGroupColor.clearCheck();
-                for(int j = (i+1)%4;;j=(++j)%4) {
-                    RadioButton radioButtonCheck = (RadioButton)radioGroupColor.getChildAt(j);
-                    if(!radioButtonCheck.isChecked()) {
-                        radioButtonCheck.setChecked(true);
-                        break;
-                    }
-                }
-                radioButton.setEnabled(false);
-
+        RadioButton radioButton = (RadioButton)radioGroupColor.getChildAt(Integer.parseInt(planeColor));
+        radioButton.setEnabled(false);
+        for(int j = 0;;j=(++j)%4) {
+            RadioButton radioButtonCheck = (RadioButton)radioGroupColor.getChildAt(j);
+            if(j != Integer.parseInt(planeColor)) {
+                radioButtonCheck.setChecked(true);
                 break;
             }
 
         }
 
+
+
         //wait to begin and receive message.
         broascastGroupHelper = new BroascastGroupHelper(30000);
         broascastGroupHelper.joinGroup();
-        broascastGroupHelper.setLoopback(true);
+        broascastGroupHelper.setLoopback(false);
         broascastGroupHelper.setOnReceiveMsgListener(new BroascastGroupHelper.OnReceiveMsgListener() {
             @Override
             public void onReceive(BroadCastBaseHelper.BroadCastBaseMsg msg) {
@@ -145,7 +127,7 @@ public class UserSettingActivity extends AppCompatActivity {
                     Message message = handler.obtainMessage();
 
 
-                    if (serliBroacastData.getTag().equals(WELCOME) || serliBroacastData.getTag().equals(REFUSE)) {
+                    if (serliBroacastData.getTag().startsWith(WELCOME) || serliBroacastData.getTag().startsWith(REFUSE)) {
                         changeRadioBundle.putString("planeColor", serliBroacastData.getPlaneColor());
                         message.setData(changeRadioBundle);
                         message.what = 0x201;//the msg is to answer other players
@@ -154,13 +136,13 @@ public class UserSettingActivity extends AppCompatActivity {
                         if (serliBroacastData.getPlayerIP().equals(mPlayerIP)) {
                             enterRoomThread.stopThread();
 
-                            if (serliBroacastData.getTag().equals(WELCOME)) {
+                            if (serliBroacastData.getTag().startsWith(WELCOME)) {
                                 message.what = 0x200;//the msg is welcome to meet this player
                                 //Toast.makeText(UserSettingActivity.this,"Waiting",Toast.LENGTH_LONG).show();
                                 Log.e("doit", "receive " + WELCOME);
                                 enterRoomThread.stopThread();
                             }
-                            if (serliBroacastData.getTag().equals(REFUSE)) {
+                            if (serliBroacastData.getTag().startsWith(REFUSE)) {
                                 message.what = 0x401;//the msg is refuse to meet this player
                             }
                         }
@@ -168,7 +150,7 @@ public class UserSettingActivity extends AppCompatActivity {
                         handler.sendMessage(message);
                     }
 
-                    if (serliBroacastData.getTag().equals(BEGIN)) {
+                    if (serliBroacastData.getTag().startsWith(BEGIN)) {
 
                         Log.e("doit", "Receive BEGIN from room");
 
@@ -188,27 +170,26 @@ public class UserSettingActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String playerName = null;
                 String planeColor = null;
-                RadioGroup radioGroupColor = (RadioGroup)findViewById(R.id.radiogroupColor);
-                EditText edtName = (EditText)findViewById(R.id.edtName);
+                RadioGroup radioGroupColor = (RadioGroup) findViewById(R.id.radiogroupColor);
+                EditText edtName = (EditText) findViewById(R.id.edtName);
 
                 playerName = edtName.getText().toString();
-                if(playerName.equals("")) {
+                if (playerName.equals("")) {
                     Toast.makeText(UserSettingActivity.this, "请输入玩家姓名", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                for(int i = 0; i <radioGroupColor.getChildCount(); i++) {
+                for (int i = 0; i < radioGroupColor.getChildCount(); i++) {
                     RadioButton r = (RadioButton) radioGroupColor.getChildAt(i);
                     if (r.isChecked()) {
-                        planeColor = r.getText().toString();
+                        planeColor = String.valueOf(i);
                         break;
                     }
                 }
 
 
-
-                SerliBroacastData enterRoomData = new SerliBroacastData(ENTER_ROOM,roomIP,mPlayerIP,planeColor,playerName);
-                enterRoomThread = new BroacastLuncherThread(broascastGroupHelper,enterRoomData.toString());
+                SerliBroacastData enterRoomData = new SerliBroacastData(ENTER_ROOM, roomIP, mPlayerIP, planeColor, playerName);
+                enterRoomThread = new BroacastLuncherThread(broascastGroupHelper, enterRoomData.toString());
                 enterRoomThread.start();
                 btnEnter.setEnabled(false);//wait for check
 

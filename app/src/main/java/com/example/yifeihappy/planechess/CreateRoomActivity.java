@@ -79,7 +79,7 @@ public class CreateRoomActivity extends AppCompatActivity {
                     for(int i = 0; i <radioGroupColor.getChildCount(); i++) {
                         RadioButton r = (RadioButton) radioGroupColor.getChildAt(i);
                         if (r.isChecked()) {
-                            planeColor = r.getText().toString();
+                            planeColor = String.valueOf(i);
                             break;
                         }
                     }

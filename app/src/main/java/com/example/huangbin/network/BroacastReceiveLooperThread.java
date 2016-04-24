@@ -26,7 +26,7 @@ public class BroacastReceiveLooperThread extends Thread {
             while(!stopListen) {
                 broascastGroupHelper.receiveMsg();
                 try {
-                    mLock.wait(1000);
+                    mLock.wait(100);
                 }catch (InterruptedException e) {
                     e.printStackTrace();
                 }

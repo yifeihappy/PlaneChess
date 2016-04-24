@@ -24,6 +24,7 @@
         <activity android:name=".InstructionActivity" />
         <activity android:name=".WaitClientsActivity" />
         <activity android:name=".UserSettingActivity"></activity>
+        <activity android:name="com.example.PPP.GameMainActivity"></activity>
     </application>
 
 </manifest>
