@@ -12,7 +12,7 @@ public class SerliBroacastData implements Serializable{
     private String playerIP;
     private String planeColor;
     private String playerName;
-    private String next;
+    private String playersNum;
 
     public String getTag() {
         return tag;
@@ -30,8 +30,8 @@ public class SerliBroacastData implements Serializable{
         return planeColor;
     }
 
-    public String getNext() {
-        return  next;
+    public String getPlayersNum() {
+        return  playersNum;
     }
 
     public String getPlayerName() {
@@ -58,17 +58,17 @@ public class SerliBroacastData implements Serializable{
         this.playerName = playerName;
     }
 
-    public void setNext(String next) {
-        this.next = next;
+    public void setPlayersNum(String playersNum) {
+        this.playersNum = playersNum;
     }
 
-    public SerliBroacastData(String tag,String roomIP,String playerIP,String planeColor,String playerName,String next) {
+    public SerliBroacastData(String tag,String roomIP,String playersNum,String playerIP,String planeColor,String playerName) {
         setTag(tag);
         setRoomIP(roomIP);
         setPlayerIP(playerIP);
         setPlaneColor(planeColor);
         setPlayerName(playerName);
-        setNext(next);
+        setPlayersNum(playersNum);
     }
     public SerliBroacastData(String tag,String roomIP,String playerIP,String planeColor,String playerName) {
         setTag(tag);
@@ -76,7 +76,7 @@ public class SerliBroacastData implements Serializable{
         setPlayerIP(playerIP);
         setPlaneColor(planeColor);
         setPlayerName(playerName);
-        setNext("FALSE");
+        setPlayersNum("4");
     }
     public SerliBroacastData() {
 
@@ -87,10 +87,11 @@ public class SerliBroacastData implements Serializable{
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append(tag+",");
         stringBuffer.append(roomIP+",");
+        stringBuffer.append(playersNum+",");
         stringBuffer.append(playerIP+",");
         stringBuffer.append(planeColor+",");
-        stringBuffer.append(playerName+",");
-        stringBuffer.append(next);
+        stringBuffer.append(playerName);
+
 
         return  stringBuffer.toString();
     }

@@ -13,11 +13,12 @@ public class Deserializable {
         stringTokenizer = new StringTokenizer(new String(msg),",");
         String tag = stringTokenizer.nextToken();
         String roomIP = stringTokenizer.nextToken();
+        String playersNum = stringTokenizer.nextToken();
         String playerIP = stringTokenizer.nextToken();
         String planeColor = stringTokenizer.nextToken();
         String playerName = stringTokenizer.nextToken();
-        String next = stringTokenizer.nextToken();
-        serliBroacastData = new SerliBroacastData(tag,roomIP,playerIP,planeColor,playerName,next);
+
+        serliBroacastData = new SerliBroacastData(tag,roomIP,playersNum,playerIP,planeColor,playerName);
         return  serliBroacastData;
     }
 

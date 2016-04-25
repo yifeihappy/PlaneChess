@@ -25,6 +25,7 @@ public class UserSettingActivity extends AppCompatActivity {
 
     BroascastGroupHelper broascastGroupHelper = null;
     String roomIP = null;
+    String playersNum = null;
     String mPlayerIP = null;
     BroacastReceiveLooperThread broacastReceiveLooperThread = null;
     BroacastLuncherThread enterRoomThread = null;
@@ -80,7 +81,9 @@ public class UserSettingActivity extends AppCompatActivity {
 
             //start a new activity
             if(msg.what == 0x100) {
+                Bundle bundleBegin = msg.getData();
                 Intent intentBegin = new Intent(UserSettingActivity.this,GameMainActivity.class);
+                intentBegin.putExtras(bundleBegin);
                 startActivity(intentBegin);
             }
 
@@ -98,6 +101,7 @@ public class UserSettingActivity extends AppCompatActivity {
         SerliBroacastData createRoomData = (SerliBroacastData)bundle.getSerializable(CREATE_ROOM);
         String planeColor = createRoomData.getPlaneColor();//The color the creater of room has selected.
         roomIP = createRoomData.getRoomIP();//　This room IP.
+        playersNum = createRoomData.getPlayersNum();//players num
         mPlayerIP = IPAdressHelper.getIPByWifi(this);//my IP
 
         //set the planeColor which the creater of the room has selected enable = false
@@ -147,7 +151,6 @@ public class UserSettingActivity extends AppCompatActivity {
                                 message.what = 0x200;//the msg is welcome to meet this player
                                 //Toast.makeText(UserSettingActivity.this,"Waiting",Toast.LENGTH_LONG).show();
                                 Log.e("doit", "receive " + WELCOME);
-                                enterRoomThread.stopThread();
                             }
                             if (serliBroacastData.getTag().startsWith(REFUSE)) {
                                 message.what = 0x401;//the msg is refuse to meet this player
@@ -159,9 +162,15 @@ public class UserSettingActivity extends AppCompatActivity {
 
                     if (serliBroacastData.getTag().startsWith(BEGIN)) {
 
+                        broacastReceiveLooperThread.stopThread();//begin to start a new gameMainActivity
+
                         message.what = 0x100;
+                        Bundle bundleBegin = new Bundle();
+                        bundleBegin.putSerializable("begin",serliBroacastData);
+                        message.setData(bundleBegin);
                         handler.sendMessage(message);
                         Log.e("doit", "Receive BEGIN from room");
+
 
                     }
 
@@ -197,7 +206,7 @@ public class UserSettingActivity extends AppCompatActivity {
                 }
 
 
-                SerliBroacastData enterRoomData = new SerliBroacastData(ENTER_ROOM, roomIP, mPlayerIP, planeColor, playerName);
+                SerliBroacastData enterRoomData = new SerliBroacastData(ENTER_ROOM, roomIP, playersNum,mPlayerIP, planeColor, playerName);
                 enterRoomThread = new BroacastLuncherThread(broascastGroupHelper, enterRoomData.toString());
                 enterRoomThread.start();
                 btnEnter.setEnabled(false);//wait for check

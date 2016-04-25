@@ -76,6 +76,7 @@ public class SearchRoomActivity extends AppCompatActivity {
                                                              Deserializable deserializable = new Deserializable();
                                                              serliBroacastData = deserializable.deSerliBroacastData(msg.msg);
                                                              //only handle the message CREATE_ROOM
+                                                             Log.e("doit",serliBroacastData.getTag());
                                                              if(serliBroacastData.getTag().startsWith(CREATE_ROOM)) {
                                                                  Message message = handler.obtainMessage();
                                                                  Bundle bundle = new Bundle();

@@ -45,7 +45,7 @@ public class CreateRoomActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String startNums = new String();
                 String playerNum = new String();
-                String playerName = new String();
+                String playerName;
                 String planeColor = new String();
 
                 playerName = edtName.getText().toString();
@@ -86,7 +86,7 @@ public class CreateRoomActivity extends AppCompatActivity {
                     Intent intent = new Intent(CreateRoomActivity.this, WaitClientsActivity.class);
                     Bundle bundle = new Bundle();
                     bundle.putCharSequence("startNums",startNums);
-                    bundle.putCharSequence("playerNum",playerNum);
+                    bundle.putCharSequence("playersNum",playerNum);
                     bundle.putCharSequence("playerName",playerName);
                     bundle.putCharSequence("planeColor",planeColor);
 
