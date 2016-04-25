@@ -97,9 +97,9 @@ public class ServerInTele {
     protected void init(int maxplayer) {
         clientsocket = new Socket[maxplayer];
         out = new PrintWriter[maxplayer];
-        thread = new ServerReadThread[maxplayer];
+        thread = new ServerReadThread[maxplayer];    //?
         msg = new MsgQueue();
-        for(int i=0; i<MAXPLAYER; i++) {
+        for(int i=0; i<MAXPLAYER; i++) {   //?
             clientsocket[i] = null;
         }
         out[0] = null;
@@ -215,7 +215,7 @@ public class ServerInTele {
      * 获得队列中接受到的数据
      * @return
      */
-    public NetMsg getData() {
+    public NetMsg getData() { //?
         return msg.getData();
     }
 

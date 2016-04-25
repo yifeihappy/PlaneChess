@@ -15,7 +15,7 @@ import java.net.SocketException;
  */
 public class ServerReadThread extends Thread {
     private ServerInTele server = null;     //手机服务器的引用
-    private Socket socket = null;           //对应的客户端的socket
+    private Socket socket = null;           //对应的客户端的socket  //?
     private BufferedReader in = null;       //对应socket的input流
 
     ServerReadThread(ServerInTele ser, Socket s) throws IOException {

@@ -132,9 +132,9 @@ public class UserSettingActivity extends AppCompatActivity {
                 SerliBroacastData serliBroacastData = deserializable.deSerliBroacastData(msg.msg);
                 //msg belongs to this room
 
-                Log.e("doit", "Receive form room " + serliBroacastData.getTag() + " " + serliBroacastData.getPlaneColor());
+                //Log.e("doit", "Receive form room " + serliBroacastData.getTag() + " " + serliBroacastData.getPlaneColor()+"onreceive"+"usersetting");
 
-                if (serliBroacastData.getRoomIP().equals(roomIP)) {
+                if (serliBroacastData.getRoomIP().startsWith(roomIP)) {
                     Message message = handler.obtainMessage();
 
 
@@ -150,7 +150,7 @@ public class UserSettingActivity extends AppCompatActivity {
                             if (serliBroacastData.getTag().startsWith(WELCOME)) {
                                 message.what = 0x200;//the msg is welcome to meet this player
                                 //Toast.makeText(UserSettingActivity.this,"Waiting",Toast.LENGTH_LONG).show();
-                                Log.e("doit", "receive " + WELCOME);
+                                Log.e("doit", "receive Welcome from room userSetting");
                             }
                             if (serliBroacastData.getTag().startsWith(REFUSE)) {
                                 message.what = 0x401;//the msg is refuse to meet this player
@@ -169,7 +169,7 @@ public class UserSettingActivity extends AppCompatActivity {
                         bundleBegin.putSerializable("begin",serliBroacastData);
                         message.setData(bundleBegin);
                         handler.sendMessage(message);
-                        Log.e("doit", "Receive BEGIN from room");
+                        Log.e("doit", "Receive BEGIN from room usersetting");
 
 
                     }

@@ -20,7 +20,7 @@ public class BroacastLuncherThread extends Thread {
     public BroacastLuncherThread(BroascastGroupHelper helper,String data) {
        this.mBroacastGrouperHelper=helper;
         this.data=data;
-        waitTime = 1000;
+        waitTime = 100;
     }
 
     public BroacastLuncherThread(BroascastGroupHelper helper,String data,int waitTime) {
@@ -39,7 +39,7 @@ public class BroacastLuncherThread extends Thread {
         synchronized (mLock) {
             while (stopThread) {
                 mBroacastGrouperHelper.sendMsg(data);
-                //Log.e("doit","broast ip"+mSelfIP);
+                Log.e("doit","broast ip is broastcast");
                 try {
                     mLock.wait(waitTime);
                     //Thread.sleep(1000);
