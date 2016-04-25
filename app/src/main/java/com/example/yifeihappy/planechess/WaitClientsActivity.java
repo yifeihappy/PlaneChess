@@ -157,6 +157,7 @@ public class WaitClientsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+
                 Intent intentBegin = new Intent(WaitClientsActivity.this,GameMainActivity.class);
                 startActivity(intentBegin);
 

@@ -14,6 +14,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.PPP.GameMainActivity;
 import com.example.huangbin.network.BroacastLuncherThread;
 import com.example.huangbin.network.BroacastReceiveLooperThread;
 import com.example.huangbin.network.BroadCastBaseHelper;
@@ -75,6 +76,12 @@ public class UserSettingActivity extends AppCompatActivity {
             //you need to select again.
             if(msg.what == 0x401) {
                 btnEnter.setEnabled(true);
+            }
+
+            //start a new activity
+            if(msg.what == 0x100) {
+                Intent intentBegin = new Intent(UserSettingActivity.this,GameMainActivity.class);
+                startActivity(intentBegin);
             }
 
             super.handleMessage(msg);
@@ -152,6 +159,8 @@ public class UserSettingActivity extends AppCompatActivity {
 
                     if (serliBroacastData.getTag().startsWith(BEGIN)) {
 
+                        message.what = 0x100;
+                        handler.sendMessage(message);
                         Log.e("doit", "Receive BEGIN from room");
 
                     }
