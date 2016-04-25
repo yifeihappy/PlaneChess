@@ -85,16 +85,17 @@ class MsgQueue {
  */
 public class ServerInTele {
     static final int PORT = 1188;
+    static final int MAXPLAYER = 4;         //玩家数
     protected ServerSocket server = null;
     protected Integer n = 0;
-    protected Socket clientsocket[] = new Socket[4];
-    protected PrintWriter out[] = new PrintWriter[4];
-    protected ServerReadThread thread[] = new ServerReadThread[4];
+    protected Socket clientsocket[] = new Socket[MAXPLAYER];
+    protected PrintWriter out[] = new PrintWriter[MAXPLAYER];
+    protected ServerReadThread thread[] = new ServerReadThread[MAXPLAYER];
     protected Thread accptthread = null;
     MsgQueue msg = new MsgQueue();
 
     protected void init() {
-        for(int i=0; i<4; i++) {
+        for(int i=0; i<MAXPLAYER; i++) {
             clientsocket[i] = null;
         }
         out[0] = null;
@@ -125,7 +126,7 @@ public class ServerInTele {
             @Override
             public void run() {
                 try {
-                    while (n < 4) {
+                    while (n < MAXPLAYER) {
                         if (this.isInterrupted()) {
                             throw new InterruptedException("accept thread has been interrupter");
                         }
@@ -167,12 +168,12 @@ public class ServerInTele {
      */
     public boolean addAi() {
         synchronized (n) {
-            if(n<4) {
+            if(n<MAXPLAYER) {
                 clientsocket[n] = null;
                 out[n] = null;
                 thread[n] = null;
                 n++;
-                if(n==4) {
+                if(n==MAXPLAYER) {
                     accptthread.interrupt();
                 }
                 return true;
