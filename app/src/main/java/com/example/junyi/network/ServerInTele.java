@@ -85,16 +85,20 @@ class MsgQueue {
  */
 public class ServerInTele {
     static final int PORT = 1188;
-    static final int MAXPLAYER = 4;         //玩家数
+    protected int MAXPLAYER = 4;         //玩家数
     protected ServerSocket server = null;
     protected Integer n = 0;
-    protected Socket clientsocket[] = new Socket[MAXPLAYER];
-    protected PrintWriter out[] = new PrintWriter[MAXPLAYER];
-    protected ServerReadThread thread[] = new ServerReadThread[MAXPLAYER];
+    protected Socket clientsocket[] = null;
+    protected PrintWriter out[] = null;
+    protected ServerReadThread thread[] = null;
     protected Thread accptthread = null;
-    MsgQueue msg = new MsgQueue();
+    MsgQueue msg = null;
 
-    protected void init() {
+    protected void init(int maxplayer) {
+        clientsocket = new Socket[maxplayer];
+        out = new PrintWriter[maxplayer];
+        thread = new ServerReadThread[maxplayer];
+        msg = new MsgQueue();
         for(int i=0; i<MAXPLAYER; i++) {
             clientsocket[i] = null;
         }
@@ -103,18 +107,18 @@ public class ServerInTele {
         n = 1;
     }
 
-    public ServerInTele(ServerSocket server) {
+    public ServerInTele(ServerSocket server, int maxplaer) {
         this.server = server;
-        init();
+        init(maxplaer);
     }
 
     /**
      * 会新建ServerSocket
      * @throws IOException
      */
-    public ServerInTele() throws IOException {
+    public ServerInTele(int maxplaer) throws IOException {
         server = new ServerSocket(PORT);
-        init();
+        init(maxplaer);
     }
 
     /**
