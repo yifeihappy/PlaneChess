@@ -5,8 +5,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 
 public class Cell {
-	private int x;
-	private int y;
+	public int x;
+	public int y;
 	public int x0,y0,x1,y1;
 	public Cell()
 	{

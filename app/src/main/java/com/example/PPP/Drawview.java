@@ -221,6 +221,18 @@ public class Drawview extends View {
 		// 绘制图像 将bitmap对象显示在坐标 x,y上
 		canvas.drawBitmap(bitmap, x, y, null);
 	}
+
+	public void drawborad(Canvas canvas)
+	{
+		Paint paint = new Paint();
+		paint.setAntiAlias(true);
+		for(int i=0;i<max_cell;i++)
+		{
+			canvas.drawRect(c[i].x0,c[i].y0,c[i].x1,c[i].y1, paint);
+			paint.setColor(Color.WHITE);
+			canvas.drawCircle(c[i].x,c[i].y,11, paint);
+		}
+	}
 	public void fly(Canvas canvas)
 	{
 		Paint paint=new Paint();
@@ -229,7 +241,7 @@ public class Drawview extends View {
 		paint.setStyle(Paint.Style.FILL);
 		paint.setStrokeWidth(3);
 
-		init(canvas);    //重绘棋盘
+		drawborad(canvas);    //重绘棋盘
 		//要遍历一遍所有的棋子重绘。
 
 		Chess tmp = new Chess();   //这个棋子实现中途的飞行更新。
@@ -253,7 +265,7 @@ public class Drawview extends View {
 		{
 			//canvas.drawArc();
 			//cell[start].x0.y0.x1.y1
-			//drawImage();
+			//drawImage(canvas);要根据图片棋盘大小来画
 			starts++;     //走完这一步，移到下一格
 		}
 

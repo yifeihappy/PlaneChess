@@ -134,15 +134,17 @@ public class Room {
             //没有优先的棋子（则此时chosenChess还是null），则通过UI获取玩家点击了哪个棋子
             if(chosenChess == null) {
 
-                while (players.get(turn).getColor() != chosenChess.getColor()) {
+                while (players.get(turn).getColor() != chosenChess.getColor()
+                        || !this.game.moveChess(chosenChess,step)) {
                     //如果玩家点击了其他颜色的棋子需要重新选择
                 }
             }
             ismove = false;
             //移动棋子
-            this.game.moveChess(chosenChess,step);
-            ismove = true;
-            //UI添加动画
+            if(this.game.moveChess(chosenChess,step)) {
+                ismove = true;
+                //UI添加动画
+            }
 /************************************这一部分可能要修改*****************************************/
             if(this.game.getBoard().getSquare(chosenChess.getPoint()).getColor() == chosenChess.getColor()) {
                 //如果走到的格子的颜色与棋子颜色相同

@@ -22,6 +22,7 @@ public class ChessGame {
     private int MAX_SQUARE_NUM=this.board.getMaxSquareNum();
     //优先走的棋子，最多4个
     private List<Chess> preferChess = new ArrayList<Chess>();
+    private int startNum[];
 
     //private List<Chess> allchess =   new ArrayList<Chess>();
 
@@ -67,6 +68,7 @@ public class ChessGame {
         initChess();
         initBoard();
         initDice();
+        initStartNum();
     }
     /*
     初始化棋子，主要是颜色
@@ -74,13 +76,15 @@ public class ChessGame {
     private void initChess() {
         for(int i=0; i<16; i++) {
             if(i>=0&&i<=3)
-            chess[i]=new Chess(Color.GREEN);
+                chess[i]=new Chess(1);  //Color.green 1
             if(i>=4&&i<=7)
-            chess[i]=new Chess(Color.RED);
+                chess[i]=new Chess(2);    //red 2
             if(i>=8&&i<=11)
-            chess[i]=new Chess(Color.YELLOW);
+                chess[i]=new Chess(3);  //yellow 3
             if(i>=12&&i<=15)
-            chess[i]=new Chess(Color.BLUE);
+                chess[i]=new Chess(0);     //blue 0
+
+            chess[i].setPoint(i+100);
         }
     }
 
@@ -96,6 +100,26 @@ public class ChessGame {
     private void initDice() {
         this.dice=new Dice();
     }
+    private void initStartNum(int a[]) {
+        int l=a.length;
+        for(int i=0;i<l;i++) {
+            this.startNum[i]=a[i];
+        }
+        return;
+    }
+    private void initStartNum() {
+        this.startNum[0]=5;
+        this.startNum[1]=6;
+        return;
+    }
+    private void initStartNum(String s) {
+        int l=s.length();
+        for(int i=0;i<l;i++) {
+            this.startNum[i]=s.charAt(i)-'0';
+        }
+        return;
+    }
+
     /*
     获取棋盘
      */
@@ -114,41 +138,63 @@ public class ChessGame {
     public List<Chess> getPreferChess() {
         return this.preferChess;
     }
+
+    public boolean contain(int a[],int num) {
+        for(int i=0;i<a.length;i++) {
+            if(a[i]==num)
+                return true;
+        }
+        return false;
+    }
     /*
     起飞规则
     @return boolean true or false 成功起飞则true否则false
      */
-    public boolean rule_Start() {
+    public boolean rule_Start(Chess c,int step) {
         //只有在掷得5点或6点，方可将一枚棋子由“基地”起飞至起飞点。
-        if(dice.rollDice() == 5 || dice.rollDice() == 6) {
-            Chess c=new Chess();//临时用来初始化，需要交互获知用户选择的棋子
+        int prePoint=c.getPoint();
+        int aim=0;
+        if(contain(this.startNum,step)) {
+            //Chess c=new Chess();//临时用来初始化，需要交互获知用户选择的棋子
             //moveChess(c,1);//临时用来move
             switch(c.getColor()) {
                 case Color.RED:
-                    c.setPoint(0);//临时量，暂定为0
-                    this.board.getSquare(0).addChess(c);
+                    aim=0;//临时量，暂定为0
                     break;
                 case Color.GREEN:
-                    c.setPoint(16);//临时量，暂定为16
-                    this.board.getSquare(16).addChess(c);
+                    aim=16;//临时量，暂定为16
                     break;
                 case Color.BLUE:
-                    c.setPoint(32);//临时量，暂定为32
-                    this.board.getSquare(32).addChess(c);
+                    aim=32;//临时量，暂定为32
                     break;
                 case Color.YELLOW:
-                    c.setPoint(48);//临时量，暂定为48
-                    this.board.getSquare(48).addChess(c);
+                    aim=48;//临时量，暂定为48
                     break;
                 default:
-                    c.setPoint(0);
-                    this.board.getSquare(0).addChess(c);
+                    //c.setPoint(0);
+                    //this.board.getSquare(0).addChess(c);
                     break;
             }
+            if(this.board.getSquare(aim).getPlaneList().size()>1 &&
+                    this.board.getSquare(aim).getPlaneList().get(0).getColor() != c.getColor()) {
+                return false;   //如果门口有异色迭子挡路，不能起飞
+            }
+            if(this.board.getSquare(aim).getPlaneList().size() == 1 &&
+                    this.board.getSquare(aim).getPlaneList().get(0).getColor() != c.getColor()) {
+                crash(this.board.getSquare(aim));    //如果只有一个异色迭子，则撞飞他
+                this.board.getSquare(aim).addChess(c);
+                c.setPoint(aim);
+                this.board.getSquare(prePoint).removeChess();
+                return true;
+            }
+            this.board.getSquare(aim).addChess(c);
+            c.setPoint(aim);
+            this.board.getSquare(prePoint).removeChess();
             return true;
         }
         return false;
-    }
+}
+
     /*
     连续掷骰子规则
     @return 如果可以连续掷骰则返回true否则false
@@ -283,6 +329,14 @@ public class ChessGame {
         int prePoint=chess.getPoint();
         //目标位置
         int nextPoint=(prePoint+step)%MAX_SQUARE_NUM;
+        if(prePoint<0 || prePoint>=100) {
+            //如果不在跑道上，说明在基地
+            if(rule_Start(chess,step)) {
+                return true;
+            }
+            else return false;
+        }
+
         if(prePoint>MAX_SQUARE_NUM)
         {   //这个IF是用于终点跑道的倒退检测
             //说明这个时候棋子已经脱离普通跑道，进入终点跑道
