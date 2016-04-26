@@ -76,13 +76,14 @@ public class ChessGame {
     private void initChess() {
         for(int i=0; i<16; i++) {
             if(i>=0&&i<=3)
-            chess[i]=new Chess(Color.GREEN);
+                chess[i]=new Chess(1);  //Color.green 1
             if(i>=4&&i<=7)
-            chess[i]=new Chess(Color.RED);
+                chess[i]=new Chess(2);    //red 2
             if(i>=8&&i<=11)
-            chess[i]=new Chess(Color.YELLOW);
+                chess[i]=new Chess(3);  //yellow 3
             if(i>=12&&i<=15)
-            chess[i]=new Chess(Color.BLUE);
+                chess[i]=new Chess(0);     //blue 0
+
             chess[i].setPoint(i+100);
         }
     }
