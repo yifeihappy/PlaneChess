@@ -34,8 +34,7 @@ public class WaitClientsActivity extends AppCompatActivity {
     BroascastGroupHelper broascastGroupHelper=null;
     BroacastLuncherThread broacastRooMIPThread = null;
     BroacastReceiveLooperThread broacastReceiveLooperThread = null;
-    Button btnBegin = null;//click to start the game if all players hava entered.
-    //int numplayer = 1;//count the number of players who have entered the room ,init with 1 because owner has entered.
+   // Button btnBegin = null;//click to start the game if all players hava entered.
     String roomIP = null;
     SerliBroacastData broacastData = null;
 
@@ -48,15 +47,14 @@ public class WaitClientsActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            if(msg.what == 0x200)
-                btnBegin.setEnabled(true);
+            //if(msg.what == 0x200)
+                //btnBegin.setEnabled(true);
             Bundle bundleBegin = msg.getData();
             //Toast.makeText(WaitClientsActivity.this,"Click to begin...",Toast.LENGTH_LONG).show();
             Intent intentBegin = new Intent(WaitClientsActivity.this,GameMainActivity.class);
             intentBegin.putExtras(bundleBegin);
             startActivity(intentBegin);
-
-
+           finish();
         }
     };
 
@@ -69,23 +67,15 @@ public class WaitClientsActivity extends AppCompatActivity {
         final Intent intent = getIntent();
         final Bundle bundle = intent.getExtras();
         playersNum = Integer.parseInt(bundle.getString("playersNum"));
-
-//        int color = Color.RED;
-//        if(bundle.getString("planeColor").equals("RED")) color= Color.RED;
-//        else if(bundle.getString("planeColor").equals("YELLO")) color = Color.YELLOW;
-//            else if(bundle.getString("planeColor").equals("BLUE")) color = Color.BLUE;
-//                else if(bundle.getString("planeColor").equals("WHITE")) color = Color.WHITE;
-
-//        owner = new Player(bundle.getString("playerName"),color);
-//        playerList.add(owner);
-
         roomIP = IPAdressHelper.getIPByWifi(this);
+
         playersWait.put(roomIP,bundle.getCharSequence("planeColor"));//add room creater plane color to colorList.key = playerIP,value = color.
         waitsName.put(roomIP, bundle.getString("playerName"));
 
-        btnBegin = (Button)findViewById(R.id.btnBegin);
+    //    btnBegin = (Button)findViewById(R.id.btnBegin);
         TextView txtRoomPlayerNum = (TextView)findViewById(R.id.txtRoomPlayerNum);
 
+        //txtRoomPlayerNum.setText("IP"+roomIP);
         txtRoomPlayerNum.setText("飞机起飞点数：" + bundle.getString("startNums") + "\n" + "人数：" +
                 bundle.getString("playersNum") + "\n" + "Host Name:" + bundle.getString("playerName") + "\n"
                 + "Host Color:" + bundle.getString("planeColor") + "\n" + "ip" + roomIP);
@@ -112,37 +102,34 @@ public class WaitClientsActivity extends AppCompatActivity {
                             if (receiveBroacastData.getTag().startsWith(ENTER_ROOM)) {
                                 SerliBroacastData sendBroacastData = null;
                                 //if the player has entered,disgard the msg
-                                Log.e("doit", ENTER_ROOM + " " + receiveBroacastData.getPlaneColor() + " " + receiveBroacastData.getPlayerIP()+ "Room");
+
+                                Log.e("doit", "WaitClients if "+ENTER_ROOM);
+
                                 if (!playersWait.containsKey(receiveBroacastData.getPlayerIP())) {
                                     //if the color which has not be selected,welcome to meet the player.
                                     if (!playersWait.containsValue(receiveBroacastData.getPlaneColor())) {
                                         sendBroacastData = new SerliBroacastData(WELCOME,roomIP, receiveBroacastData.getPlayersNum(),receiveBroacastData.getPlayerIP(),
                                                 receiveBroacastData.getPlaneColor(), receiveBroacastData.getPlayerName());
                                         //put the player to the playsWait who have come.
-                                        Log.e("doit", WELCOME + " " + receiveBroacastData.getPlayerIP() + " comes"+ "Room");
+
+                                        Log.e("doit","WaitClients if "+ WELCOME + " IP:" + receiveBroacastData.getPlayerIP());
+
+
                                         playersWait.put(receiveBroacastData.getPlayerIP(), receiveBroacastData.getPlaneColor());
-                                        waitsName.put(receiveBroacastData.getPlayerIP(),receiveBroacastData.getPlayerName());
+                                        waitsName.put(receiveBroacastData.getPlayerIP(), receiveBroacastData.getPlayerName());
+
                                     } else {//the color has been selected,refuse the player.
                                         sendBroacastData = new SerliBroacastData(REFUSE, roomIP,receiveBroacastData.getPlayersNum(), receiveBroacastData.getPlayerIP(),
                                                 receiveBroacastData.getPlaneColor(), receiveBroacastData.getPlayerName());
-                                                                             Log.e("doit", REFUSE + " " + receiveBroacastData.getPlaneColor() + " " + receiveBroacastData.getPlayerIP()+ "Room");
-                                                                         }
-
-                                                                         broascastGroupHelper.sendMsg(sendBroacastData.toString());
-
-                                                                         //if(playersWait.size() ==2) Log.e("doit","2");
-                                                                         //All players hava come,it is able to begin.
-
-                                                                     }
+                                    }
+                                    broascastGroupHelper.sendMsg(sendBroacastData.toString());
+                                }
                             }
                             if (playersWait.size() == playersNum) {
 
                                 broacastReceiveLooperThread.stopThread();//begin to start a new gameMainActivity
 
                                 broacastRooMIPThread.stopThread();//stop the broacast of ip
-                                if(broacastRooMIPThread.isAlive()){
-                                    Log.e("test","thread broacastRooMIPThread is live");
-                                }
                                 Message message = handler.obtainMessage();
                                 message.what = 0x200;
 
@@ -152,6 +139,7 @@ public class WaitClientsActivity extends AppCompatActivity {
 
                                 Iterator itr = playersWait.entrySet().iterator();
                                 Map.Entry entry;
+                                Log.e("doit","waitersname :"+String.valueOf(waitsName.size())+"playersWait :"+playersWait.size());
                                 while(itr.hasNext()) {
                                     entry = (Map.Entry) itr.next();
 
@@ -160,16 +148,21 @@ public class WaitClientsActivity extends AppCompatActivity {
                                     playersName += waitsName.get(entry.getKey())+"#";
                                 }
 
-
-                                SerliBroacastData beginData = new SerliBroacastData(BEGIN+bundle.getString("startNums"), roomIP,bundle.getString("playersNum"), playersIP,
-                                        planesColor,playersName);
+                                SerliBroacastData beginData = new SerliBroacastData(
+                                        BEGIN+bundle.getString("startNums"), roomIP,bundle.getString("playersNum"), playersIP,planesColor,playersName);
                                 Bundle bundleBegin = new Bundle();
                                 bundleBegin.putSerializable("begin",beginData);
                                 message.setData(bundleBegin);
+                                SerliBroacastData a =(SerliBroacastData) bundleBegin.getSerializable("begin");
+
+                                broascastGroupHelper.sendMsg(beginData.toString());
+
+                                broascastGroupHelper.sendMsg(beginData.toString());
+                                broascastGroupHelper.sendMsg(beginData.toString());
+                                broascastGroupHelper.sendMsg(beginData.toString());
+
                                 handler.sendMessage(message);
 
-                                //Tell all players who are waiting to begin
-                                broascastGroupHelper.sendMsg(beginData.toString());
                                                                  }
                                                              }
 
@@ -180,22 +173,22 @@ public class WaitClientsActivity extends AppCompatActivity {
 
         broacastReceiveLooperThread = new BroacastReceiveLooperThread(broascastGroupHelper);
         broacastReceiveLooperThread.start();
-
-        btnBegin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-
-//                SerliBroacastData beginData = new SerliBroacastData(BEGIN, roomIP, roomIP,
-//                                                                             bundle.getString("planeColor"),bundle.getString("playerName"), "TRUE");
-//                                                                     //Tell all players who are waiting to begin
-//                broascastGroupHelper.sendMsg(beginData.toString());
 //
-//                Intent intentBegin = new Intent(WaitClientsActivity.this,GameMainActivity.class);
-//                startActivity(intentBegin);
-
-            }
-        });
+//        btnBegin.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//
+////                SerliBroacastData beginData = new SerliBroacastData(BEGIN, roomIP, roomIP,
+////                                                                             bundle.getString("planeColor"),bundle.getString("playerName"), "TRUE");
+////                                                                     //Tell all players who are waiting to begin
+////                broascastGroupHelper.sendMsg(beginData.toString());
+////
+////                Intent intentBegin = new Intent(WaitClientsActivity.this,GameMainActivity.class);
+////                startActivity(intentBegin);
+//
+//            }
+//        });
 
 
         }
@@ -203,3 +196,8 @@ public class WaitClientsActivity extends AppCompatActivity {
 
 
 }
+//        int color = Color.RED;
+//        if(bundle.getString("planeColor").equals("RED")) color= Color.RED;
+//        else if(bundle.getString("planeColor").equals("YELLO")) color = Color.YELLOW;
+//            else if(bundle.getString("planeColor").equals("BLUE")) color = Color.BLUE;
+//                else if(bundle.getString("planeColor").equals("WHITE")) color = Color.WHITE;

@@ -39,11 +39,8 @@ public class BroacastLuncherThread extends Thread {
         synchronized (mLock) {
             while (stopThread) {
                 mBroacastGrouperHelper.sendMsg(data);
-                Log.e("doit","broast ip is broastcast");
                 try {
                     mLock.wait(waitTime);
-                    //Thread.sleep(1000);
-
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

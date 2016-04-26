@@ -116,7 +116,7 @@ public class Client {
     }
 
     /**
-     * 获得该客户端消息队列中的数据
+     * 获得该客户端消息队列中的数据x
      * @return
      */
     public NetMsg getData() {

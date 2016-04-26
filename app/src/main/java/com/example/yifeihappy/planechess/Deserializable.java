@@ -1,5 +1,7 @@
 package com.example.yifeihappy.planechess;
 
+import android.util.Log;
+
 import java.util.StringTokenizer;
 
 /**

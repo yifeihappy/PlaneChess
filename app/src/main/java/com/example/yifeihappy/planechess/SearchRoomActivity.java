@@ -38,10 +38,7 @@ public class SearchRoomActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.search_room);
-
-       // Log.e("doit", "begin onCreate");
-
-       txtRoomIP = (TextView)findViewById(R.id.txtRoomIP);
+        txtRoomIP = (TextView)findViewById(R.id.txtRoomIP);
         handler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -61,22 +58,16 @@ public class SearchRoomActivity extends AppCompatActivity {
         };
 
         broascastGroupHelper = new BroascastGroupHelper(30000);
-
         broascastGroupHelper.joinGroup();
-        //boolean success=broascastGroupHelper.joinGroup();
-       //if(success) Log.e("doit","succsss");
         broascastGroupHelper.setLoopback(true);
-
         broascastGroupHelper.setOnReceiveMsgListener(new BroascastGroupHelper.OnReceiveMsgListener() {
 
                                                          @Override
                                                          public void onReceive(BroadCastBaseHelper.BroadCastBaseMsg msg) {
-                                                             //Log.e("doit","before handler"+msg.ip);
-
                                                              Deserializable deserializable = new Deserializable();
                                                              serliBroacastData = deserializable.deSerliBroacastData(msg.msg);
                                                              //only handle the message CREATE_ROOM
-                                                             Log.e("doit",serliBroacastData.getTag());
+                                                             Log.e("doit","Searchroom Get room Ip "+serliBroacastData.getTag());
                                                              if(serliBroacastData.getTag().startsWith(CREATE_ROOM)) {
                                                                  Message message = handler.obtainMessage();
                                                                  Bundle bundle = new Bundle();
@@ -103,11 +94,12 @@ public class SearchRoomActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                Log.e("doit","before stop");
+               // Log.e("doit","before stop");
                 //stop to receive room ip
                 receiveRoomIPLooperThread.stopThread();
+                //receiveRoomIPLooperThread.stop();
 
-                Log.e("doit","afterstop");
+              //  Log.e("doit","afterstop");
                 Bundle bundle = new Bundle();
                 bundle.putSerializable(CREATE_ROOM, serliBroacastData);
                 Intent intent = new Intent(SearchRoomActivity.this, UserSettingActivity.class);

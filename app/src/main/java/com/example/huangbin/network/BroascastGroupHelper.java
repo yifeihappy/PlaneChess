@@ -123,6 +123,7 @@ public class BroascastGroupHelper extends BroadCastBaseHelper {
      * @return 成功与否
      */
     public boolean sendMsg(String msg){
+        long start=System.currentTimeMillis();
         byte[] buf=msg.getBytes();
         DatagramPacket data=new DatagramPacket(buf,0,buf.length,mGroupInetAddress,mPort);
         try {
@@ -132,6 +133,7 @@ public class BroascastGroupHelper extends BroadCastBaseHelper {
             if(mErrorListner!=null) mErrorListner.handleError(e);
             return false;
         }
+        Log.e("test","send msg ="+(System.currentTimeMillis()-start));
         return true;
     }
 
@@ -142,9 +144,7 @@ public class BroascastGroupHelper extends BroadCastBaseHelper {
     public boolean receiveMsg(){
 
         try {
-            //Log.e("doit","begin");
             mMulticastSocket.receive(mRecvData);
-            //Log.e("doit", "after receive");
         } catch (IOException e) {
             e.printStackTrace();
             if(mErrorListner!=null) mErrorListner.handleError(e);
@@ -156,7 +156,6 @@ public class BroascastGroupHelper extends BroadCastBaseHelper {
         msg.msg=mRecvData.getData();
         if(this.mListener==null) Log.e("doit","mListener null");
         if(this.mListener!=null){
-            //Log.e("doit","before onReceive");
             this.mListener.onReceive(msg);
         }
         return  true;

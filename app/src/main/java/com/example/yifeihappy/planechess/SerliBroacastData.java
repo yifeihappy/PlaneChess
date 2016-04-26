@@ -90,7 +90,7 @@ public class SerliBroacastData implements Serializable{
         stringBuffer.append(playersNum+",");
         stringBuffer.append(playerIP+",");
         stringBuffer.append(planeColor+",");
-        stringBuffer.append(playerName);
+        stringBuffer.append(playerName+",");
 
 
         return  stringBuffer.toString();

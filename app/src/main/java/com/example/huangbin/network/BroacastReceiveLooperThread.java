@@ -19,19 +19,13 @@ public class BroacastReceiveLooperThread extends Thread {
     }
     @Override
     public void run() {
-
-        synchronized (mLock)
+        while(true)
         {
-
-            while(!stopListen) {
-                broascastGroupHelper.receiveMsg();
-                try {
-                    mLock.wait(100);
-                }catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
+            synchronized (mLock)
+            {
+                if(stopListen) break;
             }
+            broascastGroupHelper.receiveMsg();
         }
     }
 }

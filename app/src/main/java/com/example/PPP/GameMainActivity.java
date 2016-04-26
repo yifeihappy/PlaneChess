@@ -28,6 +28,9 @@ public class GameMainActivity extends AppCompatActivity {
 				serliBroacastData.getPlayersNum() + "\n" + "Players Name:" + serliBroacastData.getPlayerName() + "\n"
 				+ "Players Color:" + serliBroacastData.getPlaneColor() + "\n" + "Players ip" + serliBroacastData.getPlayerIP());
 
+		String tagStartsNum = serliBroacastData.getTag();
+
+
 	}
 
 }
