@@ -1,5 +1,7 @@
 package com.example.junyi.network;
 
+import android.util.Log;
+
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -12,20 +14,6 @@ import java.util.LinkedList;
 /**
  * Created by Timer on 2016/4/17.
  */
-
-/**
- * 保存网络信息的类
- * data是数据信息
- * from表示从哪个玩家发来的信息
- */
-class NetMsg {
-    String data;
-    byte from;
-    public NetMsg(String s, byte c) {
-        this.data = s;
-        this.from = c;
-    }
-}
 
 /**
  * 管理接收到的信息的队列
@@ -52,7 +40,7 @@ class MsgQueue {
      * @return
      * 返回队列中最先要处理的数据
      */
-    public NetMsg getData() {
+    public NetMsg getData() throws InterruptedException {
         synchronized (mq) {
             if(mq.isEmpty()) {
                 try {
@@ -60,6 +48,7 @@ class MsgQueue {
                     mq.wait();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
+                    throw new InterruptedException("msg is end");
                 }
             }
             return mq.pollFirst();
@@ -84,7 +73,7 @@ class MsgQueue {
  * 如果index为2的玩家是电脑玩家，则网络连接数据为空
  */
 public class ServerInTele {
-    static final int PORT = 1188;
+    protected int PORT = 1188;
     protected int MAXPLAYER = 4;         //玩家数
     protected ServerSocket server = null;
     protected Integer n = 0;
@@ -95,11 +84,12 @@ public class ServerInTele {
     MsgQueue msg = null;
 
     protected void init(int maxplayer) {
+        MAXPLAYER = maxplayer;
         clientsocket = new Socket[maxplayer];
         out = new PrintWriter[maxplayer];
-        thread = new ServerReadThread[maxplayer];    //?
+        thread = new ServerReadThread[maxplayer];
         msg = new MsgQueue();
-        for(int i=0; i<MAXPLAYER; i++) {   //?
+        for(int i=0; i<MAXPLAYER; i++) {
             clientsocket[i] = null;
         }
         out[0] = null;
@@ -117,6 +107,12 @@ public class ServerInTele {
      * @throws IOException
      */
     public ServerInTele(int maxplaer) throws IOException {
+        server = new ServerSocket(PORT);
+        init(maxplaer);
+    }
+
+    public ServerInTele(int maxplaer,int PORT) throws IOException {
+        this.PORT = PORT;
         server = new ServerSocket(PORT);
         init(maxplaer);
     }
@@ -142,6 +138,7 @@ public class ServerInTele {
                             NetMsg m = new NetMsg(n.toString(), (byte) 0x60);
                             msg.addData(m);
                             n++;
+
                         }
                     }
                 } catch (IOException e) {
@@ -191,7 +188,7 @@ public class ServerInTele {
      * @param index 指定玩家索引
      * @param data 发送的数据
      */
-    public void send(int index, NetMsg data) {
+    public void send(int index, NetMsg data) {//?
         if(index != 0){
             if (clientsocket[index] != null) {
                 out[index].println(data.from + data.data);
@@ -215,7 +212,7 @@ public class ServerInTele {
      * 获得队列中接受到的数据
      * @return
      */
-    public NetMsg getData() { //?
+    public NetMsg getData() throws InterruptedException {
         return msg.getData();
     }
 

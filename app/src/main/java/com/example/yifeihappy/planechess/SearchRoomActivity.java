@@ -9,107 +9,94 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.huangbin.network.BroacastLuncherThread;
-import com.example.huangbin.network.BroacastReceiveLooperThread;
 import com.example.huangbin.network.BroadCastBaseHelper;
 import com.example.huangbin.network.BroascastGroupHelper;
-
-import java.util.StringTokenizer;
+import com.example.huangbin.network.BroastcastP2PHelper;
+import com.example.huangbin.network.IPAdressHelper;
 
 public class SearchRoomActivity extends AppCompatActivity {
 
-    public static final String ENTER_ROOM = "EN";//ENTERROOM
+    public static final String SEARCH_ROOM = "SE";//SEARCHROOM
     public static final String CREATE_ROOM = "CR";//CREATEROOM
     public static final String WELCOME = "WE";//WELCOME
     public static final String REFUSE = "RE";//REFUSE
     public static final String BEGIN = "BE";//BEGIN
+    public static final int INPORT_MUL = 31111;
+    public static final int GET_ROOM_IP = 0x200;
+    public static final String ROOM_DATA = "roomData";
 
 
     BroascastGroupHelper broascastGroupHelper = null;
-    Handler handler = null;
     TextView txtRoomIP=null;
-    SerliBroacastData serliBroacastData = null;
     Button btnEnter = null;
+    Handler handler = null;
+    SerliBroacastData roomData = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.search_room);
+
         txtRoomIP = (TextView)findViewById(R.id.txtRoomIP);
+        btnEnter = (Button)findViewById(R.id.btnEnter);
         handler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
-
-
-                Bundle bundle = msg.getData();
-
-                if(msg.what == 0x101) {
-                    SerliBroacastData serliRoomData = new SerliBroacastData();
-                    serliRoomData = (SerliBroacastData)bundle.getSerializable(CREATE_ROOM);
-                    txtRoomIP.setText(serliRoomData.getRoomIP());
-
+                if(msg.what == GET_ROOM_IP) {
+                    Bundle bundleHandler = msg.getData();
+                    SerliBroacastData s = (SerliBroacastData)bundleHandler.getSerializable(ROOM_DATA);
+                    txtRoomIP.setText(s.getRoomIP());
+                    btnEnter.setEnabled(true);
                 }
-                btnEnter.setEnabled(true);
-                super.handleMessage(msg);
             }
         };
 
-        broascastGroupHelper = new BroascastGroupHelper(30000);
+        broascastGroupHelper = new BroascastGroupHelper(INPORT_MUL);
         broascastGroupHelper.joinGroup();
         broascastGroupHelper.setLoopback(true);
-        broascastGroupHelper.setOnReceiveMsgListener(new BroascastGroupHelper.OnReceiveMsgListener() {
-
-                                                         @Override
-                                                         public void onReceive(BroadCastBaseHelper.BroadCastBaseMsg msg) {
-                                                             Deserializable deserializable = new Deserializable();
-                                                             serliBroacastData = deserializable.deSerliBroacastData(msg.msg);
-                                                             //only handle the message CREATE_ROOM
-                                                             Log.e("doit","Searchroom Get room Ip "+serliBroacastData.getTag());
-                                                             if(serliBroacastData.getTag().startsWith(CREATE_ROOM)) {
-                                                                 Message message = handler.obtainMessage();
-                                                                 Bundle bundle = new Bundle();
-                                                                 bundle.putSerializable(CREATE_ROOM,serliBroacastData);
-
-                                                                 message.what = 0x101;
-                                                                 message.setData(bundle);
-                                                                 handler.sendMessage(message);
-                                                             }
-
-                                                         }
-                                                     }
-
-        );
+        broascastGroupHelper.setOnReceiveMsgListener(new BroadCastBaseHelper.OnReceiveMsgListener() {
+            @Override
+            public void onReceive(BroadCastBaseHelper.BroadCastBaseMsg msg) {
+                Deserializable deserializable = new Deserializable();
+                roomData = (SerliBroacastData) deserializable.deSerliBroacastData(msg.msg);
+                //receive Room IP
+                if (roomData.getTag().startsWith(CREATE_ROOM)) {
+                    Message message = handler.obtainMessage();
+                    message.what = GET_ROOM_IP;
+                    Bundle bundleReceive = new Bundle();
+                    bundleReceive.putSerializable(ROOM_DATA, roomData);
+                    message.setData(bundleReceive);
+                    handler.sendMessage(message);
+                }
+            }
+        });
 
 
-        final BroacastReceiveLooperThread receiveRoomIPLooperThread = new BroacastReceiveLooperThread(broascastGroupHelper);
-        receiveRoomIPLooperThread.start();
-
-        btnEnter = (Button)findViewById(R.id.btnEnter);
-
+        new SearchRoomThread().start();
 
         btnEnter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-               // Log.e("doit","before stop");
-                //stop to receive room ip
-                receiveRoomIPLooperThread.stopThread();
-                //receiveRoomIPLooperThread.stop();
-
-              //  Log.e("doit","afterstop");
-                Bundle bundle = new Bundle();
-                bundle.putSerializable(CREATE_ROOM, serliBroacastData);
-                Intent intent = new Intent(SearchRoomActivity.this, UserSettingActivity.class);
-                intent.putExtras(bundle);
-                startActivity(intent);
+                Bundle bundletoUserSetting = new Bundle();
+                bundletoUserSetting.putSerializable(ROOM_DATA,roomData);
+                Intent intentToUserSetting = new Intent(SearchRoomActivity.this, UserSettingActivity.class);
+                intentToUserSetting.putExtras(bundletoUserSetting);
+                startActivity(intentToUserSetting);
+                broascastGroupHelper.destory();
                 finish();
             }
         });
-
     }
 
 
+    class SearchRoomThread extends Thread
+    {
+        @Override
+        public void run() {
+            super.run();
+            broascastGroupHelper.receiveMsg();
+        }
+    }
 }

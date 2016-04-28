@@ -29,7 +29,7 @@ public class Client {
      * @param p 服务器端口
      * @throws IOException
      */
-    Client(InetAddress inet, int p) throws IOException {
+    public Client(InetAddress inet, int p) throws IOException {
         this.addr = inet;
         this.port = p;
         this.socket = new Socket(this.addr, this.port);
@@ -119,7 +119,7 @@ public class Client {
      * 获得该客户端消息队列中的数据x
      * @return
      */
-    public NetMsg getData() {
+    public NetMsg getData() throws InterruptedException {
         return msg.getData();
     }
 

@@ -32,6 +32,7 @@ public class BroacastLuncherThread extends Thread {
     public  void stopThread(){
         synchronized (mLock) {
             this.stopThread = false;
+            mBroacastGrouperHelper.destory();
         }
     }
     @Override

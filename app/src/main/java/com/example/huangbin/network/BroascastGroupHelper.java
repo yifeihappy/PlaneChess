@@ -53,7 +53,6 @@ public class BroascastGroupHelper extends BroadCastBaseHelper {
         try {
             mGroupInetAddress=InetAddress.getByName(GOUP_ADDR);
             mMulticastSocket=new MulticastSocket(port);
-            //if(mMulticastSocket==null) Log.e("doit","mMulticastSocket null");
             mMulticastSocket.setTimeToLive(timeToLive);
         } catch (UnknownHostException e) {
             e.printStackTrace();

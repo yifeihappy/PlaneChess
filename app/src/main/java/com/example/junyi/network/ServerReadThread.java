@@ -41,7 +41,7 @@ public class ServerReadThread extends Thread {
                 synchronized (server.msg) {
                     server.msg.addData(m);
                 }
-                if((ch&0x80) != 0x00) {
+                if((ch&0x80) != 0x00) {  //    ?
                     server.sendToAll(m);
                 }
             }
