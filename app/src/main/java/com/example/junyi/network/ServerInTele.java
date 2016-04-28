@@ -191,7 +191,7 @@ public class ServerInTele {
     public void send(int index, NetMsg data) {//?
         if(index != 0){
             if (clientsocket[index] != null) {
-                out[index].println(data.from + data.data);
+                out[index].println(String.valueOf((char) data.from) + data.data);
             }
         }
     }
@@ -202,8 +202,8 @@ public class ServerInTele {
      */
     public void sendToAll(NetMsg data) {
         for(int i = 1; i<n; i++) {
-            if(clientsocket[i] != null) {
-                out[i].println(data.from + data.data);
+            if(clientsocket[i] != null ) {
+                out[i].println(String.valueOf((char) data.from) + data.data);
             }
         }
     }
@@ -226,11 +226,14 @@ public class ServerInTele {
             thread[index].interrupt();
         }
         try {
-            clientsocket[index].close();
+            if(clientsocket[index] != null) {
+                clientsocket[index].close();
+            }
         } catch (IOException e) {
             //关闭连接失败，或者连接已经关闭
-            clientsocket[index] = null;
             e.printStackTrace();
+        }finally {
+            clientsocket[index] = null;
         }
     }
 
@@ -245,19 +248,25 @@ public class ServerInTele {
                 thread[index].interrupt();
             }
             try {
-                clientsocket[index].close();
+                if(clientsocket[index] != null) {
+                    clientsocket[index].close();
+                }
             } catch (IOException e) {
                 //关闭连接失败，或者连接已经关闭
-                clientsocket[index] = null;
                 e.printStackTrace();
+            }finally {
+                clientsocket[index] = null;
             }
         }
         try {
-            server.close();
+            if(server != null) {
+                server.close();
+            }
         } catch (IOException e) {
             //关闭客户端失败，或者客户端已经关闭
-            server = null;
             e.printStackTrace();
+        }finally {
+            server = null;
         }
     }
 }

@@ -13,54 +13,12 @@
         android:textColor="@color/black"
         android:layout_margin="15dp"
         android:id="@+id/txtRoomIP"/>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:orientation="vertical"
-        android:background="#eeffffff"
-        android:layout_margin="15dp">
-        <TextView
-            android:layout_width="100px"
-            android:layout_height="wrap_content"
-            android:text="001"
-            android:textColor="@color/black"/>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:orientation="horizontal"
-        android:background="#eeffffff"
-        android:layout_margin="15dp">
-        <TextView
-            android:layout_width="100px"
-            android:layout_height="wrap_content"
-            android:text="002"
-            android:textColor="@color/black"/>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:orientation="horizontal"
-        android:background="#eeffffff"
-        android:layout_margin="15dp">
-        <TextView
-            android:layout_width="100px"
-            android:layout_height="wrap_content"
-            android:text="003"
-            android:textColor="@color/black"/>
-    </LinearLayout>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="进入"
-        android:id="@+id/btnEnter"
-        android:background="@color/yellow"
-        android:textSize="30sp"
-        android:width="150dp"
-        android:height="40dp"
-        android:textColor="@color/black"
-        android:gravity="center"
-        android:layout_margin="15dp"
-        android:enabled="false"/>
+<ListView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/rooms"
+    />
+
+
 
 </LinearLayout>

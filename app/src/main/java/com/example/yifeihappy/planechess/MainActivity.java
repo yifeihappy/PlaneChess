@@ -24,12 +24,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(intentCreateRoom);
+
             }
         });
         btnSearchRoom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(intentSearchRoom);
+
+
             }
         });
     }

@@ -132,7 +132,6 @@ public class BroascastGroupHelper extends BroadCastBaseHelper {
             if(mErrorListner!=null) mErrorListner.handleError(e);
             return false;
         }
-        Log.e("test","send msg ="+(System.currentTimeMillis()-start));
         return true;
     }
 

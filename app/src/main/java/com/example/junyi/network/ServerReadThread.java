@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.SocketException;
+import java.nio.channels.ClosedByInterruptException;
 
 /**
  * Created by Timer on 2016/4/13.
@@ -45,6 +46,8 @@ public class ServerReadThread extends Thread {
                     server.sendToAll(m);
                 }
             }
+        } catch (ClosedByInterruptException e) {
+            e.printStackTrace();
         } catch (IOException e) {
             if(e instanceof SocketException) {
                 //读取数据出现错误，或者连接已关闭

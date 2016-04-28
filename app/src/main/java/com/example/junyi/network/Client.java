@@ -77,7 +77,7 @@ public class Client {
         if(out.checkError()) {
             throw new SocketException();
         }
-        out.println(data.from + data.data);
+        out.println(String.valueOf((char) data.from) + data.data);
         if(out.checkError()) {
             throw new SocketException();
         }
@@ -92,7 +92,7 @@ public class Client {
         if(out.checkError()) {
             throw new SocketException();
         }
-        out.println((data.from|0x80) + data.data);
+        out.println(String.valueOf((char) (data.from|0x80)) + data.data);
         if(out.checkError()) {
             throw new SocketException();
         }
@@ -107,11 +107,14 @@ public class Client {
             thread.interrupt();
         }
         try {
-            socket.close();
+            if(socket != null) {
+                socket.close();
+            }
         } catch (IOException e) {
             //关闭连接失败，或者连接已经关闭
-            socket = null;
             e.printStackTrace();
+        }finally {
+            socket = null;
         }
     }
 

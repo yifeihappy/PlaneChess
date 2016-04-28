@@ -1,9 +1,12 @@
 package com.example.junyi.network;
 
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.SocketException;
+import java.nio.channels.ClosedByInterruptException;
 
 /**
  * Created by Timer on 2016/4/13.
@@ -39,6 +42,8 @@ public class ClientReadThread extends Thread {
                     s.msg.addData(m);
                 }
             }
+        } catch (ClosedByInterruptException e) {
+            e.printStackTrace();
         } catch (IOException e) {
             if(e instanceof SocketException) {
                 //读取数据出现错误，或者连接已关闭

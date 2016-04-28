@@ -29,6 +29,8 @@ public class UserSettingActivity extends AppCompatActivity {
     public static final String WELCOME = "WE";//WELCOME
     public static final String REFUSE = "RE";//REFUSE
     public static final String BEGIN = "BE";//BEGIN
+    public static final String CBACK = "CBA";//BA
+    public static final String RBACK = "RBA";//RBA
     public static final int CONNECT_WHAT = 0X300;//CONNECT TO SERVER
     public static final int WELCOME_WHAT = 0x200;
     public static final int REFUSE_WHAT = 0x400;
@@ -36,13 +38,16 @@ public class UserSettingActivity extends AppCompatActivity {
     public static final String ROOM_DATA = "roomData";
     public static final int WELCOME_OTHERS_WHAT = 0x201;
     public static final int REFUSE_OTHERS_WHAT = 0x401;
+    public static final int RBACK_WHAT = 0x500;
     public static final int SOCKET_PORT = 20000;
     String roomIP = null;
     String mPlayerIP = null;
     String playersNum = null;
     Client client = null;
-    String mPlaneColor = null;
+    String mPlaneColor = "NULL";
+    String mPlayerName = "NULL";
     int mIndex ;
+    ClientThread clientThread;
 
     Button btnEnter = null;
     private RadioGroup radioGroupColor =null;
@@ -53,7 +58,7 @@ public class UserSettingActivity extends AppCompatActivity {
             super.handleMessage(msg);
 
             if(msg.what == CONNECT_WHAT) {
-                Toast.makeText(UserSettingActivity.this,"Yon have connect to the room serversocket.",Toast.LENGTH_LONG).show();
+                //Toast.makeText(UserSettingActivity.this,"Yon have connect to the room serversocket.",Toast.LENGTH_LONG).show();
             }
 
             if(msg.what == WELCOME_WHAT) {
@@ -82,6 +87,11 @@ public class UserSettingActivity extends AppCompatActivity {
             if(msg.what == BEGIN_WHAT) {
                 Toast.makeText(UserSettingActivity.this,"Receive begin.",Toast.LENGTH_LONG).show();
             }
+
+            if(msg.what == RBACK_WHAT) {
+                Toast.makeText(UserSettingActivity.this,"Room close",Toast.LENGTH_SHORT).show();
+                finish();
+            }
         }
     };
 
@@ -101,14 +111,12 @@ public class UserSettingActivity extends AppCompatActivity {
 
         //set the planeColor which the creater of the room has selected enable = false
         radioGroupColor = (RadioGroup)findViewById(R.id.radiogroupColor);
-        radioButtonRoomerSelected= (RadioButton)radioGroupColor.getChildAt(Integer.parseInt(planeColor));
+        radioButtonRoomerSelected= (RadioButton) radioGroupColor.getChildAt(Integer.parseInt(planeColor));
         radioButtonRoomerSelected.setEnabled(false);
         radioGroupColor.clearCheck();
 
-
-
-
-        new ClientThread().start();
+        clientThread =new ClientThread();
+        clientThread.start();
 
         btnEnter = (Button)findViewById(R.id.btnEnter);
         btnEnter.setOnClickListener(new View.OnClickListener() {
@@ -157,12 +165,11 @@ public class UserSettingActivity extends AppCompatActivity {
     class ClientThread extends Thread {
         public Object myLock = new Object();
         private volatile boolean stopThread = false;
+
         public  void stopGetData() {
-            synchronized (myLock) {
-                stopThread = true;
-                client.close();//          ?
+            stopThread = true;
+                client.close();
                 this.interrupt();
-            }
 
         }
 
@@ -173,35 +180,35 @@ public class UserSettingActivity extends AppCompatActivity {
                 client = new Client( InetAddress.getByName(roomIP),SOCKET_PORT);
             } catch (IOException e) {
 
+
+                /////////////////////////////////////////////
                 e.printStackTrace();
             }
 
-            synchronized (myLock) {
+
                 try {
                     while (!stopThread) {
                         NetMsg msg = client.getData();//If there is not data,this thread will be blocked.
                         Message message = handler.obtainMessage();
                         Deserializable deserializable = new Deserializable();
                         SerliBroacastData enterMessage = deserializable.deSerliBroacastData(msg.getData());
-
                         if(enterMessage.getRoomIP().startsWith(roomIP)) {
-
                             if(enterMessage.getTag().startsWith(CONNECT)) {
                                 mIndex = Integer.parseInt(enterMessage.getPlayersNum());//get index at server
                                 message.what = CONNECT_WHAT;
-
+                                handler.sendMessage(message);
                             }
 
                             if (enterMessage.getTag().startsWith(WELCOME)) {
                                 if(enterMessage.getPlayerIP().startsWith(mPlayerIP)) {
                                     message.what = WELCOME_WHAT;
                                     mPlaneColor = enterMessage.getPlaneColor();//If tag==welcome,the message getPlaneColor==mPlanecolor
-
-                                        //bundleClientReceive.putString();
+                                    mPlayerName = enterMessage.getPlayerName();
                                 } else {
                                     message.arg1 = Integer.parseInt(enterMessage.getPlaneColor());//message.arg1 == index of color has selected.
                                     message.what = WELCOME_OTHERS_WHAT;
                                 }
+                                handler.sendMessage(message);
                             }
 
                             if(enterMessage.getTag().startsWith(REFUSE)) {
@@ -211,20 +218,56 @@ public class UserSettingActivity extends AppCompatActivity {
                                     message.arg1 = Integer.parseInt(enterMessage.getPlaneColor());//message.arg1 == index of color has selected.
                                     message.what = REFUSE_OTHERS_WHAT;
                                 }
+                                handler.sendMessage(message);
                             }
 
                             if(enterMessage.getTag().startsWith(BEGIN)) {
                                 message.what = BEGIN_WHAT;
+                                playersNum = enterMessage.getPlayersNum();
+                                handler.sendMessage(message);
+                            }
+
+                            if(enterMessage.getTag().startsWith(RBACK)) {
+                                message.what = RBACK_WHAT;
+                                handler.sendMessage(message);
+
                             }
                         }
-                        handler.sendMessage(message);
+
                     }
                 } catch (InterruptedException e) {
                     this.interrupt();
                 }
-            }
+
 
 
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        //playerNum == mIndex;
+        SerliBroacastData enterRoomData = new SerliBroacastData(CBACK,roomIP,String.valueOf(mIndex),mPlayerIP,mPlaneColor,mPlayerName);
+        NetMsg msg = new NetMsg(enterRoomData.toString(),(byte)0x06);
+
+        try {
+
+            client.sendToServer(msg);
+
+        } catch (SocketException e) {
+            e.printStackTrace();
+            Toast.makeText(UserSettingActivity.this,"Back message Send to server failed",Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        clientThread.stopGetData();
+        client.close();
+        super.onDestroy();
+
+
     }
 }
